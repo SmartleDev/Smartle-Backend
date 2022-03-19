@@ -11,6 +11,7 @@ const routeTrial_1 = __importDefault(require("./routes/routeTrial"));
 const studentRoutes_1 = __importDefault(require("./routes/studentRoutes"));
 const coursesRoutes_1 = __importDefault(require("./routes/coursesRoutes"));
 const parentRoutes_1 = __importDefault(require("./routes/parentRoutes"));
+const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const app = (0, express_1.default)();
 dotenv_1.default.config();
 app.use(express_1.default.json({ limit: "30mb" }));
@@ -26,10 +27,10 @@ app.use('/trial', routeTrial_1.default);
 app.use('/', studentRoutes_1.default);
 app.use('/', coursesRoutes_1.default);
 app.use('/', parentRoutes_1.default);
+app.use('/', authRoutes_1.default);
 app.get("/", (req, res) => {
     res.json({ message: "Smartle Backend" });
 });
-const PORT = 8000;
-app.listen(PORT, () => {
-    console.log(`Server Running on PORT ${PORT}!`);
+app.listen("8000", () => {
+    console.log("Server Running!");
 });
