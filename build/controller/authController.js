@@ -39,14 +39,16 @@ const confrimCode = (req, res) => {
         Username: email,
         Pool: userPool,
     };
-    // var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser(userData);
-    //     cognitoUser.confirmRegistration(code, true, function(err : any, result : any) {
-    //         if (err) {
-    //             alert(err);
-    //             return;
-    //         }
-    //         console.log('call result: ' + result);
-    //     });
+    var cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userData);
+    cognitoUser.confirmRegistration(code, true, function (err, result) {
+        if (err) {
+            console.log(err);
+            res.send(err);
+            return;
+        }
+        console.log('call result: ' + result);
+        res.send('call result: ' + result);
+    });
 };
 exports.confrimCode = confrimCode;
 const login = (req, res) => {
