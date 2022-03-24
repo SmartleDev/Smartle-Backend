@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.confrimCode = exports.signUp = void 0;
+exports.logout = exports.rememberDevice = exports.resendCode = exports.getAllUsers = exports.login = exports.confrimCode = exports.signUp = void 0;
 require("cross-fetch/polyfill");
 const amazon_cognito_identity_js_1 = require("amazon-cognito-identity-js");
 const poolData = {
@@ -10,6 +10,7 @@ const poolData = {
 const userPool = new amazon_cognito_identity_js_1.CognitoUserPool(poolData);
 exports.signUp = ((req, res) => {
     const { email, name, password } = req.body;
+    console.log(req.body);
     let attributeList = [];
     const emailData = {
         Name: 'email',
@@ -29,7 +30,7 @@ exports.signUp = ((req, res) => {
             res.send(err.message || JSON.stringify(err));
             return;
         }
-        res.send({ data: result.user.username, res });
+        res.send(result.user);
         var cognitoUser = result.user;
     });
 });
@@ -46,8 +47,8 @@ const confrimCode = (req, res) => {
             res.send(err);
             return;
         }
-        console.log('call result: ' + result);
-        res.send('call result: ' + result);
+        console.log(result);
+        res.send(result);
     });
 };
 exports.confrimCode = confrimCode;
@@ -65,8 +66,10 @@ const login = (req, res) => {
     const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
     cognitoUser.authenticateUser(authenticationDetails, {
         onSuccess: result => {
-            var accessToken = result.getAccessToken().getJwtToken();
-            res.send(result);
+            res.send({
+                token: result.getIdToken().getJwtToken(),
+                accessToken: result.getAccessToken().getJwtToken()
+            });
         },
         onFailure: function (err) {
             console.log(err.message || JSON.stringify(err));
@@ -75,3 +78,72 @@ const login = (req, res) => {
     });
 };
 exports.login = login;
+const getAllUsers = (req, res) => {
+    const { email } = req.body;
+    const userDetails = {
+        Username: email,
+        Pool: userPool,
+    };
+    const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
+    cognitoUser.getUserData(function (err, userData) {
+        if (err) {
+            res.send(err.message || JSON.stringify(err));
+            return;
+        }
+        console.log('User data for user ' + userData);
+    });
+    // If you want to force to get the user data from backend,
+    // you can set the bypassCache to true
+    cognitoUser.getUserData(function (err, userData) {
+        if (err) {
+            res.send(err.message || JSON.stringify(err));
+            return;
+        }
+        res.send('User data for user ' + userData);
+    }, { bypassCache: true });
+};
+exports.getAllUsers = getAllUsers;
+const resendCode = (req, res) => {
+    const { email } = req.body;
+    const userDetails = {
+        Username: email,
+        Pool: userPool,
+    };
+    const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
+    cognitoUser.resendConfirmationCode(function (err, result) {
+        if (err) {
+            res.send(err.message || JSON.stringify(err));
+            return;
+        }
+        console.log(result);
+        res.send(result);
+    });
+};
+exports.resendCode = resendCode;
+const rememberDevice = (req, res) => {
+    const { email } = req.body;
+    const userDetails = {
+        Username: email,
+        Pool: userPool,
+    };
+    const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
+    cognitoUser.setDeviceStatusRemembered({
+        onSuccess: function (result) {
+            res.send('call result: ' + result);
+        },
+        onFailure: function (err) {
+            res.send(err.message || JSON.stringify(err));
+        },
+    });
+};
+exports.rememberDevice = rememberDevice;
+const logout = (req, res) => {
+    const { email } = req.body;
+    const userDetails = {
+        Username: email,
+        Pool: userPool,
+    };
+    const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
+    cognitoUser.signOut();
+};
+exports.logout = logout;
