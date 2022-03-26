@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.rememberDevice = exports.resendCode = exports.getAllUsers = exports.login = exports.confrimCode = exports.signUp = void 0;
+exports.createChild = exports.passwordLessLogin = exports.logout = exports.rememberDevice = exports.resendCode = exports.getAllUsers = exports.loginParentDataInput = exports.login = exports.confrimCode = exports.signUp = void 0;
+const config_1 = __importDefault(require("../config/config"));
 require("cross-fetch/polyfill");
 const amazon_cognito_identity_js_1 = require("amazon-cognito-identity-js");
 const poolData = {
@@ -68,7 +72,10 @@ const login = (req, res) => {
         onSuccess: result => {
             res.send({
                 token: result.getIdToken().getJwtToken(),
-                accessToken: result.getAccessToken().getJwtToken()
+                accessToken: result.getAccessToken().getJwtToken(),
+                username: result.getAccessToken().payload.username,
+                name: result.getIdToken().payload.name,
+                email: result.getIdToken().payload.email
             });
         },
         onFailure: function (err) {
@@ -78,6 +85,15 @@ const login = (req, res) => {
     });
 };
 exports.login = login;
+const loginParentDataInput = (req, res) => {
+    const { parentId, parentName, parentEmail } = req.body;
+    config_1.default.query('INSERT INTO parent (parent_id, parent_name, parent_email) VALUES(?,?,?)', [parentId, parentName, parentEmail], (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+    });
+};
+exports.loginParentDataInput = loginParentDataInput;
 const getAllUsers = (req, res) => {
     const { email } = req.body;
     const userDetails = {
@@ -147,3 +163,51 @@ const logout = (req, res) => {
     cognitoUser.signOut();
 };
 exports.logout = logout;
+const passwordLessLogin = (req, res) => {
+    const { email, password } = req.body;
+    const loginDetails = {
+        Username: email,
+    };
+    const authenticationDetails = new amazon_cognito_identity_js_1.AuthenticationDetails(loginDetails);
+    const userDetails = {
+        Username: email,
+        Pool: userPool,
+    };
+    const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
+    cognitoUser.setAuthenticationFlowType('CUSTOM_AUTH');
+    cognitoUser.initiateAuth(authenticationDetails, {
+        onSuccess: result => {
+            res.send({
+                token: result.getIdToken().getJwtToken(),
+                accessToken: result.getAccessToken().getJwtToken()
+            });
+        },
+        onFailure: function (err) {
+            console.log(err.message || JSON.stringify(err));
+            res.send(err.message || JSON.stringify(err));
+        },
+        customChallenge: function (loginDetails) {
+            var challengeResponses = 'challenge-answer';
+            cognitoUser.sendCustomChallengeAnswer(challengeResponses, this);
+        },
+    });
+};
+exports.passwordLessLogin = passwordLessLogin;
+const createChild = (req, res) => {
+    const { userId } = req.body;
+    try {
+        config_1.default.query(`SELECT * FROM student WHERE parent_id = ${userId}`, (err, result) => {
+            if (err) {
+                console.log(err);
+                res.json({ message: "error" });
+            }
+            else {
+                res.json({ message: "success", result });
+            }
+        });
+    }
+    catch (error) {
+        res.status(404).json({ message: 'Error' });
+    }
+};
+exports.createChild = createChild;

@@ -12,4 +12,6 @@ router.post("/code", authController_1.confrimCode);
 router.post("/getUser", authController_1.getAllUsers);
 router.post("/resendcode", authController_1.resendCode);
 router.post("/rememberme", authController_1.rememberDevice);
+router.post("/loginwithoutpass", authController_1.passwordLessLogin);
+router.post("/parentpopluate", authController_1.loginParentDataInput);
 exports.default = router;
