@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createChild = exports.passwordLessLogin = exports.logout = exports.rememberDevice = exports.resendCode = exports.getAllUsers = exports.loginParentDataInput = exports.login = exports.confrimCode = exports.signUp = void 0;
+exports.createChild = exports.childrenSelect = exports.passwordLessLogin = exports.logout = exports.rememberDevice = exports.resendCode = exports.getAllUsers = exports.loginParentDataInput = exports.login = exports.confrimCode = exports.signUp = void 0;
 const config_1 = __importDefault(require("../config/config"));
 require("cross-fetch/polyfill");
 const amazon_cognito_identity_js_1 = require("amazon-cognito-identity-js");
@@ -77,6 +77,12 @@ const login = (req, res) => {
                 name: result.getIdToken().payload.name,
                 email: result.getIdToken().payload.email
             });
+            //  db.query('INSERT INTO parent (parent_id, parent_name, parent_email) VALUES(?,?,?)', [result.getAccessToken().payload.username, result.getIdToken().payload.name, result.getIdToken().payload.email],
+            //  (err, result) => {
+            //     if(err){
+            // 	console.log(err);
+            //  	}
+            //  }) 
         },
         onFailure: function (err) {
             console.log(err.message || JSON.stringify(err));
@@ -91,6 +97,7 @@ const loginParentDataInput = (req, res) => {
         if (err) {
             console.log(err);
         }
+        res.send(result);
     });
 };
 exports.loginParentDataInput = loginParentDataInput;
@@ -193,10 +200,29 @@ const passwordLessLogin = (req, res) => {
     });
 };
 exports.passwordLessLogin = passwordLessLogin;
-const createChild = (req, res) => {
+const childrenSelect = (req, res) => {
     const { userId } = req.body;
     try {
-        config_1.default.query(`SELECT * FROM student WHERE parent_id = ${userId}`, (err, result) => {
+        config_1.default.query(`SELECT * FROM student WHERE parent_id = ?`, [userId], (err, result) => {
+            if (err) {
+                console.log(err);
+                res.json({ message: "error" });
+            }
+            else {
+                res.json({ message: "success", result });
+            }
+        });
+    }
+    catch (error) {
+        res.status(404).json({ message: 'Error' });
+    }
+};
+exports.childrenSelect = childrenSelect;
+const createChild = (req, res) => {
+    const { studentName, studentAge, parentId } = req.body;
+    const studentDob = studentAge;
+    try {
+        config_1.default.query('INSERT INTO student (student_name, student_dob, student_age, parent_id) VALUES(?,?,?,?)', [studentName, studentDob, studentAge, parentId], (err, result) => {
             if (err) {
                 console.log(err);
                 res.json({ message: "error" });
