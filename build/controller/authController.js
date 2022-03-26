@@ -219,10 +219,9 @@ const childrenSelect = (req, res) => {
 };
 exports.childrenSelect = childrenSelect;
 const createChild = (req, res) => {
-    const { studentName, studentAge, parentId } = req.body;
-    const studentDob = studentAge;
+    const { studentName, studentGender, studentAge, parentId } = req.body;
     try {
-        config_1.default.query('INSERT INTO student (student_name, student_dob, student_age, parent_id) VALUES(?,?,?,?)', [studentName, studentDob, studentAge, parentId], (err, result) => {
+        config_1.default.query('INSERT INTO student (student_name, student_gender, student_age, parent_id) VALUES(?,?,?,?)', [studentName, studentGender, studentAge, parentId, studentGender], (err, result) => {
             if (err) {
                 console.log(err);
                 res.json({ message: "error" });
