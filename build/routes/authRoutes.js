@@ -8,6 +8,7 @@ const authController_1 = require("../controller/authController");
 const router = express_1.default.Router();
 router.post("/signup", authController_1.signUp);
 router.post("/login", authController_1.login);
+router.post("/logout", authController_1.logout);
 router.post("/code", authController_1.confrimCode);
 router.post("/getUser", authController_1.getAllUsers);
 router.post("/resendcode", authController_1.resendCode);
