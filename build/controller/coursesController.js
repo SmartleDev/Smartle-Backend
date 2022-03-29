@@ -38,12 +38,12 @@ exports.getAllCourses = ((req, res) => {
     });
 });
 exports.getAllCoursesOnHome = ((req, res) => {
-    let sql = `SELECT * from course`;
+    let sql = `SELECT * from course LIMIT ${8}`;
     config_1.default.query(sql, (err, result) => {
         if (err) {
             console.log(err);
         }
-        res.send(result);
+        res.send({ result: result });
     });
 });
 exports.getCourseView = ((req, res) => {
