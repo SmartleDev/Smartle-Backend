@@ -43,7 +43,7 @@ exports.getAllCoursesOnHome = ((req, res) => {
         if (err) {
             console.log(err);
         }
-        res.send({ result: result });
+        res.send(result);
     });
 });
 exports.getCourseView = ((req, res) => {
