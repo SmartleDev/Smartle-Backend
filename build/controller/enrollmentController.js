@@ -7,7 +7,7 @@ exports.getLearnerCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getLearnerCourses = ((req, res) => {
     let { studentId } = req.body;
-    let sql = `SELECT * FROM enrollment WHERE student_id = ${studentId}`;
+    let sql = `SELECT * FROM smartle.enrollment INNER JOIN course ON course.course_id = enrollment.course_id WHERE student_id = ${studentId}`;
     config_1.default.query(sql, (err, rows) => {
         if (err) {
             console.log(err);
