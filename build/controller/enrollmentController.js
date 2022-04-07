@@ -17,7 +17,7 @@ exports.getLearnerCourses = ((req, res) => {
 });
 exports.getEnrolledCourseView = ((req, res) => {
     let { courseId, studentId } = req.body;
-    config_1.default.query(`SELECT * FROM smartle.enrollment WHERE student_id = ? AND course_id = ?`, [studentId, courseId], (err, result) => {
+    config_1.default.query(`SELECT * FROM smartle.enrollment INNER JOIN smartle.course ON enrollment.course_id = course.course_id WHERE student_id = ? AND enrollment.course_id = ?`, [studentId, courseId], (err, result) => {
         if (err) {
             console.log(err);
         }
