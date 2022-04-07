@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLearnerCourses = void 0;
+exports.getEnrolledCourseView = exports.getLearnerCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getLearnerCourses = ((req, res) => {
     let { studentId } = req.body;
@@ -13,5 +13,14 @@ exports.getLearnerCourses = ((req, res) => {
             console.log(err);
         }
         res.send(rows);
+    });
+});
+exports.getEnrolledCourseView = ((req, res) => {
+    let { courseId, studentId } = req.body;
+    config_1.default.query(`SELECT * FROM smartle.enrollment WHERE student_id = ? AND course_id = ?`, [studentId, courseId], (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        res.send(result);
     });
 });

@@ -7,4 +7,5 @@ const express_1 = __importDefault(require("express"));
 const enrollmentController_1 = require("../controller/enrollmentController");
 const router = express_1.default.Router();
 router.post("/enrolledcourses", enrollmentController_1.getLearnerCourses);
+router.post("/getEnrolledCourseView", enrollmentController_1.getEnrolledCourseView);
 exports.default = router;

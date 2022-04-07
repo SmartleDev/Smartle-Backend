@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getModuleView = exports.getTopicforModule = exports.getModuleforCourse = exports.getCourseView = exports.getAllCoursesOnHome = exports.getAllCourses = void 0;
+exports.getEnrolledCourseView = exports.getModuleView = exports.getTopicforModule = exports.getModuleforCourse = exports.getCourseView = exports.getAllCoursesOnHome = exports.getAllCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getAllCourses = ((req, res) => {
     let sql = `SELECT * from course`;
@@ -80,6 +80,15 @@ exports.getModuleView = ((req, res) => {
     let moduleId = req.params.id;
     let sql = `SELECT * FROM smartle.module WHERE module_id = ${moduleId}`;
     config_1.default.query(sql, (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        res.send(result);
+    });
+});
+exports.getEnrolledCourseView = ((req, res) => {
+    let { moduleId, studentId } = req.body;
+    config_1.default.query(`SELECT * FROM smartle.enrollment WHERE student_id = ? AND course_id = ?`, [studentId, moduleId], (err, result) => {
         if (err) {
             console.log(err);
         }
