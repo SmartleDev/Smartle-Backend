@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getEnrolledCourseView = exports.getModuleView = exports.getTopicforModule = exports.getModuleforCourse = exports.getCourseView = exports.getAllCoursesOnHome = exports.getAllCourses = void 0;
+exports.getRecommendedCourses = exports.getEnrolledCourseView = exports.getModuleView = exports.getTopicforModule = exports.getModuleforCourse = exports.getCourseView = exports.getAllCoursesOnHome = exports.getAllCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getAllCourses = ((req, res) => {
     let sql = `SELECT * from course`;
@@ -93,5 +93,18 @@ exports.getEnrolledCourseView = ((req, res) => {
             console.log(err);
         }
         res.send(result);
+    });
+});
+exports.getRecommendedCourses = ((req, res) => {
+    let { learnerAge } = req.body;
+    if (learnerAge === 9) {
+        learnerAge = 8;
+    }
+    let sql = `SELECT * FROM smartle.course WHERE course_age REGEXP ${learnerAge}`;
+    config_1.default.query(sql, (err, rows) => {
+        if (err) {
+            console.log(err);
+        }
+        res.send(rows);
     });
 });
