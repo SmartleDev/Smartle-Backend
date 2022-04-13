@@ -8,4 +8,8 @@ const enrollmentController_1 = require("../controller/enrollmentController");
 const router = express_1.default.Router();
 router.post("/enrolledcourses", enrollmentController_1.getLearnerCourses);
 router.post("/getEnrolledCourseView", enrollmentController_1.getEnrolledCourseView);
+router.post("/getinstructorlist", enrollmentController_1.getInstructorList);
+router.post("/getcourseandinstructordetails", enrollmentController_1.getCourseAndInstructorDetails);
+router.post("/getsessionview", enrollmentController_1.getSessionView);
+router.post("/enrollLearner", enrollmentController_1.enrollLearner);
 exports.default = router;
