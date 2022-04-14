@@ -44,7 +44,7 @@ exports.getCourseAndInstructorDetails = ((req, res) => {
 });
 exports.getSessionView = ((req, res) => {
     let { instructorId } = req.body;
-    config_1.default.query(`SELECT * FROM smartle.session WHERE instructor_id = 1`, [instructorId], (err, result) => {
+    config_1.default.query(`SELECT * FROM smartle.session WHERE instructor_id = ?`, [instructorId], (err, result) => {
         if (err) {
             console.log(err);
         }
