@@ -43,8 +43,8 @@ exports.getCourseAndInstructorDetails = ((req, res) => {
     });
 });
 exports.getSessionView = ((req, res) => {
-    let { instructorId } = req.body;
-    config_1.default.query(`SELECT * FROM smartle.session WHERE instructor_id = ?`, [instructorId], (err, result) => {
+    let { instructorId, courseId } = req.body;
+    config_1.default.query(` SELECT * FROM smartle.session INNER JOIN instructor_course ON session.instructor_course_id = instructor_course.instructor_course_id WHERE instructor_id = ? AND course_id = ?`, [instructorId, courseId], (err, result) => {
         if (err) {
             console.log(err);
         }
