@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.enrollLearner = exports.getSessionView = exports.getCourseAndInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getLearnerCourses = void 0;
+exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getCourseAndInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getLearnerCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getLearnerCourses = ((req, res) => {
     let { studentId } = req.body;
@@ -44,7 +44,7 @@ exports.getCourseAndInstructorDetails = ((req, res) => {
 });
 exports.getSessionView = ((req, res) => {
     let { instructorId, courseId } = req.body;
-    config_1.default.query(` SELECT * FROM smartle.session INNER JOIN instructor_course ON session.instructor_course_id = instructor_course.instructor_course_id WHERE instructor_id = ? AND course_id = ?`, [instructorId, courseId], (err, result) => {
+    config_1.default.query(` SELECT * FROM smartle.session WHERE course_id = ?`, [courseId], (err, result) => {
         if (err) {
             console.log(err);
         }
@@ -52,8 +52,27 @@ exports.getSessionView = ((req, res) => {
     });
 });
 exports.enrollLearner = ((req, res) => {
-    let { courseId, studentId, studentFeeStatus, instructorId } = req.body;
-    config_1.default.query(`INSERT INTO enrollment (course_id, student_id, student_feestatus, course_progress, instructor_id) VALUES(?,?,?,?,?)`, [courseId, studentId, studentFeeStatus, 0, instructorId], (err, result) => {
+    let { courseId, studentId, studentFeeStatus, sessionId, enrollmentType } = req.body;
+    config_1.default.query(`SELECT * FROM enrollment WHERE course_id = ? AND student_id = ?`, [courseId, studentId], (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        if (result.length === 0) {
+            config_1.default.query(`INSERT INTO enrollment (course_id, student_id, student_feestatus, course_progress, session_id, enrollment_type) VALUES(?,?,?,?,?,?)`, [courseId, studentId, studentFeeStatus, 0, sessionId, enrollmentType], (err, result) => {
+                if (err) {
+                    console.log(err);
+                }
+                res.send({ message: 'Congratualtions You have Booked This Trial Course', status: 'success' });
+            });
+        }
+        else {
+            res.send({ message: 'User Already Register for This Course', status: 'error' });
+        }
+    });
+});
+exports.getEnrolledSessionDetails = ((req, res) => {
+    let { courseId } = req.body;
+    config_1.default.query(`SELECT * FROM smartle.enrollment INNER JOIN smartle.session ON enrollment.session_id = session.session_id WHERE enrollment.course_id = ?;`, [courseId], (err, result) => {
         if (err) {
             console.log(err);
         }
