@@ -13,4 +13,5 @@ router.post("/getcourseandinstructordetails", enrollmentController_1.getCourseAn
 router.post("/getsessionview", enrollmentController_1.getSessionView);
 router.post("/enrollLearner", enrollmentController_1.enrollLearner);
 router.post("/getenrolledsessiondetails", enrollmentController_1.getEnrolledSessionDetails);
+router.post("/verifyUserEnrollment", enrollmentController_1.verifyUserEnrollment);
 exports.default = router;

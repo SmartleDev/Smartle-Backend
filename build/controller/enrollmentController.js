@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getCourseAndInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getLearnerCourses = void 0;
+exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getCourseAndInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getLearnerCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getLearnerCourses = ((req, res) => {
     let { studentId } = req.body;
@@ -77,5 +77,19 @@ exports.getEnrolledSessionDetails = ((req, res) => {
             console.log(err);
         }
         res.send(result);
+    });
+});
+exports.verifyUserEnrollment = ((req, res) => {
+    let { studentId, courseId } = req.body;
+    config_1.default.query(`SELECT * FROM smartle.enrollment WHERE student_id = ? AND course_id = ?`, [studentId, courseId], (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        if (result.length === 0) {
+            res.send(false);
+        }
+        else {
+            res.send(true);
+        }
     });
 });
