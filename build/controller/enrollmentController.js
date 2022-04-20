@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getCourseAndInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getLearnerCourses = void 0;
+exports.convertTrialToBuyCourse = exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getLearnerCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getLearnerCourses = ((req, res) => {
     let { studentId } = req.body;
@@ -33,9 +33,9 @@ exports.getInstructorList = ((req, res) => {
         res.send(result);
     });
 });
-exports.getCourseAndInstructorDetails = ((req, res) => {
-    let { courseId, instructorId } = req.body;
-    config_1.default.query(`SELECT * FROM smartle.instructor_course INNER JOIN instructor ON instructor_course.instructor_id = instructor.instructor_id INNER JOIN course ON instructor_course.course_id = course.course_id WHERE instructor_course.course_id = ? AND instructor_course.instructor_id = ?`, [courseId, instructorId], (err, result) => {
+exports.getInstructorDetails = ((req, res) => {
+    let instructorId = req.params.id;
+    config_1.default.query(`SELECT * FROM smartle.instructor WHERE instructor_id = ?`, [instructorId], (err, result) => {
         if (err) {
             console.log(err);
         }
@@ -44,7 +44,7 @@ exports.getCourseAndInstructorDetails = ((req, res) => {
 });
 exports.getSessionView = ((req, res) => {
     let { instructorId, courseId } = req.body;
-    config_1.default.query(` SELECT * FROM smartle.session WHERE course_id = ?`, [courseId], (err, result) => {
+    config_1.default.query(` SELECT * FROM smartle.session WHERE course_id = ? ORDER BY session_datetime`, [courseId], (err, result) => {
         if (err) {
             console.log(err);
         }
@@ -71,8 +71,8 @@ exports.enrollLearner = ((req, res) => {
     });
 });
 exports.getEnrolledSessionDetails = ((req, res) => {
-    let { courseId } = req.body;
-    config_1.default.query(`SELECT * FROM smartle.enrollment INNER JOIN smartle.session ON enrollment.session_id = session.session_id WHERE enrollment.course_id = ?;`, [courseId], (err, result) => {
+    let { courseId, studentId } = req.body;
+    config_1.default.query(`SELECT * FROM smartle.enrollment INNER JOIN smartle.session ON enrollment.session_id = session.session_id WHERE enrollment.course_id = ? AND enrollment.student_id = ?;`, [courseId, studentId], (err, result) => {
         if (err) {
             console.log(err);
         }
@@ -91,5 +91,14 @@ exports.verifyUserEnrollment = ((req, res) => {
         else {
             res.send(true);
         }
+    });
+});
+exports.convertTrialToBuyCourse = ((req, res) => {
+    let { enrollmentId } = req.body;
+    config_1.default.query(`UPDATE smartle.enrollment SET enrollment_type = 'paid' WHERE enrollment_id = ${enrollmentId}`, (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        res.send({ message: "Congratualtions Your Trial Is now a Compelet Course", status: "success" });
     });
 });
