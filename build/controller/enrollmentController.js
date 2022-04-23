@@ -52,13 +52,13 @@ exports.getSessionView = ((req, res) => {
     });
 });
 exports.enrollLearner = ((req, res) => {
-    let { courseId, studentId, studentFeeStatus, sessionId, enrollmentType, courseProgress } = req.body;
+    let { courseId, studentId, studentFeeStatus, sessionId, enrollmentType } = req.body;
     config_1.default.query(`SELECT * FROM enrollment WHERE course_id = ? AND student_id = ?`, [courseId, studentId], (err, result) => {
         if (err) {
             console.log(err);
         }
         if (result.length === 0) {
-            config_1.default.query(`INSERT INTO enrollment (course_id, student_id, student_feestatus, course_progress, session_id, enrollment_type) VALUES(?,?,?,?,?,?)`, [courseId, studentId, studentFeeStatus, courseProgress, 0, sessionId, enrollmentType], (err, result) => {
+            config_1.default.query(`INSERT INTO enrollment (course_id, student_id, student_feestatus, course_progress, session_id, enrollment_type) VALUES(?,?,?,?,?,?)`, [courseId, studentId, studentFeeStatus, 0, sessionId, enrollmentType], (err, result) => {
                 if (err) {
                     console.log(err);
                 }
@@ -95,7 +95,7 @@ exports.verifyUserEnrollment = ((req, res) => {
 });
 exports.convertTrialToBuyCourse = ((req, res) => {
     let { enrollmentId } = req.body;
-    config_1.default.query(`UPDATE smartle.enrollment SET enrollment_type = 'paid', course_progress = 0 WHERE enrollment_id = ${enrollmentId}`, (err, result) => {
+    config_1.default.query(`UPDATE smartle.enrollment SET enrollment_type = 'paid' WHERE enrollment_id = ${enrollmentId}`, (err, result) => {
         if (err) {
             console.log(err);
         }
