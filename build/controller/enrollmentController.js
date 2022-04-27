@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateSessionAvaliablity = exports.convertTrialToBuyCourse = exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getLearnerCourses = void 0;
+exports.getTopicContent = exports.updateSessionAvaliablity = exports.convertTrialToBuyCourse = exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getLearnerCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getLearnerCourses = ((req, res) => {
     let { studentId } = req.body;
@@ -109,5 +109,14 @@ exports.updateSessionAvaliablity = ((req, res) => {
             console.log(err);
         }
         res.send(true);
+    });
+});
+exports.getTopicContent = ((req, res) => {
+    let topicId = req.params.id;
+    config_1.default.query(`SELECT * FROM smartle.topic WHERE topic_id = ${topicId};`, (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        res.send(result);
     });
 });

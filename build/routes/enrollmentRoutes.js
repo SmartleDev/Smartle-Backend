@@ -16,4 +16,5 @@ router.post("/getenrolledsessiondetails", enrollmentController_1.getEnrolledSess
 router.post("/verifyUserEnrollment", enrollmentController_1.verifyUserEnrollment);
 router.post("/convertTrialToBuyCourse", enrollmentController_1.convertTrialToBuyCourse);
 router.post("/updateSessionAvaliablity", enrollmentController_1.updateSessionAvaliablity);
+router.get("/getTopicContent/:id", enrollmentController_1.getTopicContent);
 exports.default = router;
