@@ -8,4 +8,8 @@ const courseProgressController_1 = require("../controller/courseProgressControll
 const router = express_1.default.Router();
 router.get("/getProgressCourseModule/:id", courseProgressController_1.getProgressCourseModule);
 router.get("/getProgressModuleTopic/:id", courseProgressController_1.getProgressModuleTopic);
+router.get("/getTrackedCourse/:id", courseProgressController_1.getTrackedCourse);
+router.post("/updateTopicStatus", courseProgressController_1.updateTopicStatus);
+router.post("/updateModuleStatus", courseProgressController_1.updateModuleStatus);
+router.post("/updateModuleCompeletedStatus", courseProgressController_1.updateModuleCompeletedStatus);
 exports.default = router;
