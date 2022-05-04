@@ -53,11 +53,36 @@ exports.updateModuleStatus = ((req, res) => {
     });
 });
 exports.updateModuleCompeletedStatus = ((req, res) => {
-    const { modulesCompleted, enrollmentId } = req.body;
-    config_1.default.query('UPDATE smartle.course_progress SET course_modules_completed = ? WHERE enrollment_id = ?', [modulesCompleted, enrollmentId], (err, result) => {
+    const { enrollmentId } = req.body;
+    config_1.default.query('SELECT * FROM smartle.course_progress WHERE course_modules_completed < course_total_modules AND enrollment_id = ?', [enrollmentId], (err, result) => {
         if (err) {
             console.log(err);
         }
-        res.send({ result: "success" });
+        if (result.length === 0) {
+            res.send({ message: 'User Course Successfully Compeleted', status: 'error' });
+        }
+        else {
+            config_1.default.query('UPDATE smartle.course_progress SET course_modules_completed = course_modules_completed + 1 WHERE enrollment_id = ?', [enrollmentId], (err, row) => {
+                if (err) {
+                    console.log(err);
+                }
+                config_1.default.query('SELECT * FROM smartle.course_progress WHERE enrollment_id = ?', [enrollmentId], (err, rowNumMain) => {
+                    var _a, _b;
+                    if (err) {
+                        console.log(err);
+                    }
+                    const course_modules_completed = (_a = rowNumMain[0]) === null || _a === void 0 ? void 0 : _a.course_modules_completed;
+                    const course_total_modules = (_b = rowNumMain[0]) === null || _b === void 0 ? void 0 : _b.course_total_modules;
+                    const progress_done = (course_modules_completed / course_total_modules) * 100;
+                    config_1.default.query('UPDATE smartle.enrollment SET course_progress = ? WHERE enrollment_id = ?', [progress_done, enrollmentId], (err, rowNum) => {
+                        if (err) {
+                            console.log(err);
+                        }
+                        // res.send({result : "success"});
+                    });
+                });
+                res.send({ result: "success" });
+            });
+        }
     });
 });
