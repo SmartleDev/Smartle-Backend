@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateModuleCompeletedStatus = exports.updateModuleStatus = exports.updateTopicStatus = exports.getTrackedCourse = exports.getProgressModuleTopic = exports.getProgressCourseModule = void 0;
+exports.enrolledUserProgressDefault = exports.updateModuleCompeletedStatus = exports.updateModuleStatus = exports.updateTopicStatus = exports.getTrackedCourse = exports.getProgressModuleTopic = exports.getProgressCourseModule = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getProgressCourseModule = ((req, res) => {
     const courseId = req.params.id;
@@ -82,6 +82,36 @@ exports.updateModuleCompeletedStatus = ((req, res) => {
                     });
                 });
                 res.send({ result: "success" });
+            });
+        }
+    });
+});
+exports.enrolledUserProgressDefault = ((req, res) => {
+    const { enrollmentId, courseId } = req.body;
+    let moduleId = null;
+    let topicId = null;
+    let courseModuleLength = null;
+    config_1.default.query('SELECT module_id FROM smartle.coursemodule WHERE course_id = ?;', [courseId], (err, rows) => {
+        if (err) {
+            console.log(err);
+        }
+        const valModule = rows === null || rows === void 0 ? void 0 : rows.map((dataItem) => dataItem === null || dataItem === void 0 ? void 0 : dataItem.module_id);
+        moduleId = valModule[0];
+        courseModuleLength = valModule === null || valModule === void 0 ? void 0 : valModule.length;
+        if (moduleId !== null) {
+            config_1.default.query('SELECT topic_id FROM smartle.module_topic WHERE module_id = ?;', [moduleId], (err, rows) => {
+                if (err) {
+                    console.log(err);
+                }
+                const valTopic = rows === null || rows === void 0 ? void 0 : rows.map((dataItem) => dataItem === null || dataItem === void 0 ? void 0 : dataItem.topic_id);
+                topicId = valTopic[0];
+                console.log(topicId);
+                config_1.default.query(`INSERT INTO course_progress (course_topic, course_module, enrollment_id, course_total_modules, course_modules_completed) VALUES(?,?,?,?,?)`, [topicId, moduleId, enrollmentId, courseModuleLength, 0], (err, result) => {
+                    if (err) {
+                        console.log(err);
+                    }
+                    res.send({ result: "success" });
+                });
             });
         }
     });

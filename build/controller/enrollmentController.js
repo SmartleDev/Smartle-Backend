@@ -62,7 +62,14 @@ exports.enrollLearner = ((req, res) => {
                 if (err) {
                     console.log(err);
                 }
-                res.send({ message: 'Congratualtions You have Booked This Trial Course', status: 'success' });
+                config_1.default.query(`SELECT enrollment_id FROM smartle.enrollment WHERE course_id = ? AND student_id = ?;`, [courseId, studentId], (err, result) => {
+                    var _a;
+                    if (err) {
+                        console.log(err);
+                    }
+                    res.send({ enrolmentId: (_a = result[0]) === null || _a === void 0 ? void 0 : _a.enrollment_id, message: 'Congratualtions You have Booked This Course' });
+                });
+                // res.send({message : 'Congratualtions You have Booked This Course', status : 'success'});
             });
         }
         else {
