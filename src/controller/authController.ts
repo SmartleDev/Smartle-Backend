@@ -221,6 +221,7 @@ export const logout = (req: Request, res: Response) => {
 	};
 
 	const cognitoUser = new CognitoUser(userDetails)
+	
 	cognitoUser.signOut();
 }
 

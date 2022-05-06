@@ -47,7 +47,7 @@ export const getAllCourses =  ((req: Request, res: Response) => {
 
 export const getAllCoursesOnHome =  ((req: Request, res: Response) => {
 
-    let sql = `SELECT * from course`;
+    let sql = `SELECT * from course LIMIT ${8}`;
 
     db.query(sql, (err:any, result:any) =>{
         if(err){
@@ -76,6 +76,54 @@ export const getModuleforCourse =  ((req: Request, res: Response) => {
             console.log(err);
         }
 
+        res.send(rows);
+    });
+});
+
+export const getTopicforModule =  ((req: Request, res: Response) => {
+    let moduleId = req.params.id;
+    let sql = `SELECT * FROM smartle.module_topic  INNER JOIN  topic ON module_topic.topic_id = topic.topic_id WHERE module_id = ${moduleId}`;
+    db.query(sql, (err: any, result: any) =>{
+        if(err){
+            console.log(err);
+        }
+        res.send(result);
+    });
+}); 
+
+export const getModuleView =  ((req: Request, res: Response) => {
+    let moduleId = req.params.id;
+    let sql = `SELECT * FROM smartle.module WHERE module_id = ${moduleId}`;
+    db.query(sql, (err: any, result: any) =>{
+        if(err){
+            console.log(err);
+        }
+        res.send(result);
+    });
+}); 
+
+export const getEnrolledCourseView =  ((req: Request, res: Response) => {
+    let {moduleId, studentId} = req.body;
+    db.query(`SELECT * FROM smartle.enrollment WHERE student_id = ? AND course_id = ?`, [studentId, moduleId], (err: any, result: any) =>{
+        if(err){
+            console.log(err);
+        }
+        res.send(result);
+    });
+}); 
+
+export const getRecommendedCourses =  ((req: Request, res: Response) => {
+    let {learnerAge} = req.body;
+
+    if(learnerAge === 9){
+        learnerAge = 8
+    }
+
+    let sql = `SELECT * FROM smartle.course WHERE course_age REGEXP ${learnerAge}`;
+    db.query(sql, (err: any, rows: any) =>{
+        if(err){
+            console.log(err);
+        }
         res.send(rows);
     });
 });

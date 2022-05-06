@@ -10,12 +10,14 @@ import {
   loginParentDataInput,
   childrenSelect,
   createChild,
+  logout,
 } from "../controller/authController";
 
 const router = express.Router();
 
 router.post("/signup", signUp);
 router.post("/login", login);
+router.post("/logout", logout);
 router.post("/code", confrimCode);
 router.post("/getUser", getAllUsers);
 router.post("/resendcode", resendCode);
