@@ -7,6 +7,6 @@ const express_1 = __importDefault(require("express"));
 const parentController_1 = require("../controller/parentController");
 const router = express_1.default.Router();
 router.get("/parent", parentController_1.getAllParents);
-router.get("/setparentinfo", parentController_1.setParentInfo);
+router.post("/setparentinfo", parentController_1.setParentInfo);
 router.post("/updateparent", parentController_1.updateParent);
 exports.default = router;

@@ -21,29 +21,19 @@ exports.getAllParents = ((req, res) => {
 });
 exports.setParentInfo = ((req, res) => {
     const { parent_id } = req.body;
-    if (parent_id) {
-        config_1.default.query('SELECT * FROM smartle.parent WHERE parent_id=?', [parent_id], (err, rows) => {
-            if (err) {
-                console.log(err);
-            }
-            res.send({ rows });
-        });
-    }
-    else {
-        res.send({ result: "failed" });
-    }
+    config_1.default.query(`SELECT * FROM smartle.parent WHERE parent_id = "${parent_id}"`, (err, rows) => {
+        if (err) {
+            console.log(err);
+        }
+        res.send(rows);
+    });
 });
 exports.updateParent = ((req, res) => {
     const { phone, parent_id } = req.body;
-    if (phone) {
-        config_1.default.query('UPDATE smartle.parent SET parent_contactno = ? WHERE parent_id = ?', [phone, parent_id], (err, rows) => {
-            if (err) {
-                console.log(err);
-            }
-            res.send({ result: "success" });
-        });
-    }
-    else {
-        res.send({ result: "failed" });
-    }
+    config_1.default.query(`UPDATE smartle.parent SET parent_contactno = ? WHERE parent_id = '${parent_id}'`, [phone], (err, rows) => {
+        if (err) {
+            console.log(err);
+        }
+        res.send({ result: "Success" });
+    });
 });
