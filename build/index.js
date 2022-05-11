@@ -14,6 +14,7 @@ const parentRoutes_1 = __importDefault(require("./routes/parentRoutes"));
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const enrollmentRoutes_1 = __importDefault(require("./routes/enrollmentRoutes"));
 const courseProgressRoutes_1 = __importDefault(require("./routes/courseProgressRoutes"));
+const emailServiceRoutes_1 = __importDefault(require("./routes/emailServiceRoutes"));
 const app = (0, express_1.default)();
 dotenv_1.default.config();
 app.use(express_1.default.json({ limit: "30mb" }));
@@ -32,6 +33,7 @@ app.use('/', parentRoutes_1.default);
 app.use('/', authRoutes_1.default);
 app.use('/', enrollmentRoutes_1.default);
 app.use('/', courseProgressRoutes_1.default);
+app.use('/', emailServiceRoutes_1.default);
 app.get("/", (req, res) => {
     res.json({ message: "Smartle Backend" });
 });
