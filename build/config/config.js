@@ -7,9 +7,9 @@ const mysql2_1 = __importDefault(require("mysql2"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 exports.default = mysql2_1.default.createConnection({
-    host: 'smartle-database.chtrceswdnga.ap-south-1.rds.amazonaws.com',
+    host: process.env.HOST,
     port: 3306,
-    user: 'smartleadmin',
-    password: 'smartleroot',
-    database: 'smartle'
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE
 });

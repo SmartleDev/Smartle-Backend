@@ -6,17 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.enrollTrialCourseEmailService = exports.enrollCourseEmailService = exports.addLearnerEmailService = exports.accountCreationEmailService = void 0;
 const config_1 = __importDefault(require("../config/config"));
 const aws_sdk_1 = __importDefault(require("aws-sdk"));
-// const ses = new aws.SES({
-//     apiVersion: "2022-05-09",
-//     accessKeyId : 'AKIA3V6IJEBBNIHCGC7T',
-//     secretAccessKey : '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',
-//     region : 'ap-south-1'
-// })
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const ses = new aws_sdk_1.default.SES({
     apiVersion: "2022-05-09",
-    accessKeyId: 'AKIA3V6IJEBBPSJLLEOZ',
-    secretAccessKey: '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',
-    region: 'us-east-1'
+    accessKeyId: process.env.ACCESSKEY,
+    secretAccessKey: process.env.SECRETKEY,
+    region: process.env.REGION
 });
 const emailService = (emailTo, body, subject) => {
     const params = {

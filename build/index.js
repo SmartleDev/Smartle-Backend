@@ -16,7 +16,8 @@ const enrollmentRoutes_1 = __importDefault(require("./routes/enrollmentRoutes"))
 const courseProgressRoutes_1 = __importDefault(require("./routes/courseProgressRoutes"));
 const emailServiceRoutes_1 = __importDefault(require("./routes/emailServiceRoutes"));
 const app = (0, express_1.default)();
-dotenv_1.default.config();
+dotenv_1.default.config({ path: './.env' });
+console.log(process.env.LOL);
 app.use(express_1.default.json({ limit: "30mb" }));
 app.use(express_1.default.urlencoded({ limit: "30mb", extended: true }));
 app.use((0, cors_1.default)());
