@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.enrollCourseEmailService = exports.addLearnerEmailService = exports.accountCreationEmailService = void 0;
+exports.enrollTrialCourseEmailService = exports.enrollCourseEmailService = exports.addLearnerEmailService = exports.accountCreationEmailService = void 0;
 const config_1 = __importDefault(require("../config/config"));
 const aws_sdk_1 = __importDefault(require("aws-sdk"));
 // const ses = new aws.SES({
@@ -105,7 +105,7 @@ exports.enrollCourseEmailService = ((req, res) => {
     const { emailTo, studentName, courseId } = req.body;
     let courseDetails;
     let body;
-    const subject = `Learner Added`;
+    const subject = `Course Enrollment`;
     try {
         config_1.default.query(`SELECT * FROM course WHERE course_id = ?`, [courseId], (err, result) => {
             var _a;
@@ -122,6 +122,44 @@ exports.enrollCourseEmailService = ((req, res) => {
            <i>www.dev.smartle.co/course/${courseId}</i>
            <br />
             All the best! </h4>
+           
+          <h4> In case of any query, you can contact us at: <i>talk2us@smartle.co</i> or reply to this email.</h4.`;
+            }
+            emailService(emailTo, body, subject).then((val) => {
+                console.log(val);
+                res.send("Email Sent Sucessfully");
+            }).catch((err) => {
+                res.send("Error" + err);
+            });
+        });
+    }
+    catch (error) {
+        res.status(404).json({ message: 'Error' });
+    }
+});
+exports.enrollTrialCourseEmailService = ((req, res) => {
+    const { emailTo, studentName, courseId } = req.body;
+    let courseDetails;
+    let body;
+    const subject = `Trial Course Enrollment`;
+    try {
+        config_1.default.query(`SELECT * FROM course WHERE course_id = ?`, [courseId], (err, result) => {
+            var _a;
+            if (err) {
+                console.log(err);
+                res.send({ message: "error" });
+            }
+            else {
+                courseDetails = result;
+                body =
+                    `<h1><span style = 'color : green'>Congratulations</span> ${studentName}, </h1> 
+            <h3>You have successfully enrolled into the Trial course ${(_a = courseDetails[0]) === null || _a === void 0 ? void 0 : _a.course_name}</h3>.
+          <h4> To begin your  journey, click on the link below:
+          <i>www.dev.smartle.co/course/${courseId}</i>
+           <br />
+            All the best! </h4>
+            <h3>If You like the Course Pleaes do Buy the Course From link below</h3>
+            <i>www.dev.smartle.co/bookcourse/${courseId}</i>
            
           <h4> In case of any query, you can contact us at: <i>talk2us@smartle.co</i> or reply to this email.</h4.`;
             }

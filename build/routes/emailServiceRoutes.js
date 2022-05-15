@@ -9,4 +9,5 @@ const router = express_1.default.Router();
 router.post("/accountCreationEmailService", emailServiceController_1.accountCreationEmailService);
 router.post("/addLearnerEmailService", emailServiceController_1.addLearnerEmailService);
 router.post("/enrollCourseEmailService", emailServiceController_1.enrollCourseEmailService);
+router.post("/enrollTrialCourseEmailService", emailServiceController_1.enrollTrialCourseEmailService);
 exports.default = router;
