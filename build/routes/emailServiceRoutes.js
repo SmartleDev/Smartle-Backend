@@ -8,4 +8,5 @@ const emailServiceController_1 = require("../controller/emailServiceController")
 const router = express_1.default.Router();
 router.post("/accountCreationEmailService", emailServiceController_1.accountCreationEmailService);
 router.post("/addLearnerEmailService", emailServiceController_1.addLearnerEmailService);
+router.post("/enrollCourseEmailService", emailServiceController_1.enrollCourseEmailService);
 exports.default = router;

@@ -3,14 +3,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addLearnerEmailService = exports.accountCreationEmailService = void 0;
+exports.enrollCourseEmailService = exports.addLearnerEmailService = exports.accountCreationEmailService = void 0;
 const config_1 = __importDefault(require("../config/config"));
 const aws_sdk_1 = __importDefault(require("aws-sdk"));
+// const ses = new aws.SES({
+//     apiVersion: "2022-05-09",
+//     accessKeyId : 'AKIA3V6IJEBBNIHCGC7T',
+//     secretAccessKey : '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',
+//     region : 'ap-south-1'
+// })
 const ses = new aws_sdk_1.default.SES({
     apiVersion: "2022-05-09",
-    accessKeyId: 'AKIA3V6IJEBBECRZI36R',
-    secretAccessKey: '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',
-    region: 'ap-south-1'
+    accessKeyId: 'AKIA3V6IJEBBPSJLLEOZ',
+    secretAccessKey: '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',
+    region: 'us-east-1'
 });
 const emailService = (emailTo, body, subject) => {
     const params = {
@@ -70,9 +76,8 @@ exports.addLearnerEmailService = ((req, res) => {
             }
             else {
                 studenDetails = { student: result[(result === null || result === void 0 ? void 0 : result.length) - 1], number_of_students: result.length };
-                body = `
-
-            <h1 style = 'color : green'>Congratulations!</h1>
+                body =
+                    ` <h1 style = 'color : green'>Congratulations!</h1>
         
              <h3>You have successfully added your ${studenDetails === null || studenDetails === void 0 ? void 0 : studenDetails.number_of_students} learner
              <br> 
@@ -83,6 +88,42 @@ exports.addLearnerEmailService = ((req, res) => {
             You can explore different courses to begin your learning journey with us using the link below:</h3>
             <i>www.dev.smartle.co/courses</i>
             <h4>In case of any query, you can contact us at: <i>talk2us@smartle.co</i> or reply to this email.</h3>`;
+            }
+            emailService(emailTo, body, subject).then((val) => {
+                console.log(val);
+                res.send("Email Sent Sucessfully");
+            }).catch((err) => {
+                res.send("Error" + err);
+            });
+        });
+    }
+    catch (error) {
+        res.status(404).json({ message: 'Error' });
+    }
+});
+exports.enrollCourseEmailService = ((req, res) => {
+    const { emailTo, studentName, courseId } = req.body;
+    let courseDetails;
+    let body;
+    const subject = `Learner Added`;
+    try {
+        config_1.default.query(`SELECT * FROM course WHERE course_id = ?`, [courseId], (err, result) => {
+            var _a;
+            if (err) {
+                console.log(err);
+                res.send({ message: "error" });
+            }
+            else {
+                courseDetails = result;
+                body =
+                    `<h1><span style = 'color : green'>Congratulations</span> ${studentName}, </h1> 
+            <h3>You have successfully enrolled into the course ${(_a = courseDetails[0]) === null || _a === void 0 ? void 0 : _a.course_name}</h3>.
+          <h4> To begin your  journey, click on the link below:
+           <i>www.dev.smartle.co/course/${courseId}</i>
+           <br />
+            All the best! </h4>
+           
+          <h4> In case of any query, you can contact us at: <i>talk2us@smartle.co</i> or reply to this email.</h4.`;
             }
             emailService(emailTo, body, subject).then((val) => {
                 console.log(val);

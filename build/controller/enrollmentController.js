@@ -44,7 +44,7 @@ exports.getInstructorDetails = ((req, res) => {
 });
 exports.getSessionView = ((req, res) => {
     let { instructorId, courseId } = req.body;
-    config_1.default.query(` SELECT * FROM smartle.session WHERE course_id = ? ORDER BY session_datetime`, [courseId], (err, result) => {
+    config_1.default.query(` SELECT * FROM smartle.session WHERE course_id = ? AND session_avalibility > 0 AND date(session_date) >= curdate() ORDER BY session_datetime`, [courseId], (err, result) => {
         if (err) {
             console.log(err);
         }
