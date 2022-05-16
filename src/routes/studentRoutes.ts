@@ -3,6 +3,6 @@ import {getAllStudents} from '../controller/studentController';
 
 const router = express.Router();
 
-router.get("/student", getAllStudents);
+router.get("/email", getAllStudents);
 
 export default router;

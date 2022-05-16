@@ -9,9 +9,12 @@ import parentRouter from './routes/parentRoutes';
 import authRoutes from './routes/authRoutes';
 import enrollmentRoutes from './routes/enrollmentRoutes';
 import courseProgressRoutes from './routes/courseProgressRoutes';
+import emailServiceRoutes from './routes/emailServiceRoutes';
 
 const app = express()
-dotenv.config()
+dotenv.config({path : './.env'})
+
+console.log(process.env.LOL)
 
 app.use(express.json({limit : "30mb"}))
 app.use(express.urlencoded({limit: "30mb", extended: true}))
@@ -30,6 +33,7 @@ app.use('/', parentRouter);
 app.use('/', authRoutes);
 app.use('/', enrollmentRoutes);
 app.use('/', courseProgressRoutes);
+app.use('/', emailServiceRoutes);
 
 app.get("/", (req: Request, res: Response): void => {
   res.json({ message: "Smartle Backend" });
