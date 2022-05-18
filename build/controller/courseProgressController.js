@@ -106,7 +106,7 @@ exports.enrolledUserProgressDefault = ((req, res) => {
                 const valTopic = rows === null || rows === void 0 ? void 0 : rows.map((dataItem) => dataItem === null || dataItem === void 0 ? void 0 : dataItem.topic_id);
                 topicId = valTopic[0];
                 console.log(topicId);
-                config_1.default.query(`INSERT INTO course_progress (course_topic, course_module, enrollment_id, course_total_modules, course_modules_completed,course_topics_completed) VALUES(?,?,?,?,?,?)`, [topicId, moduleId, enrollmentId, courseModuleLength, 0, []], (err, result) => {
+                config_1.default.query(`INSERT INTO course_progress (course_topic, course_module, enrollment_id, course_total_modules, course_modules_completed,course_topics_completed) VALUES(?,?,?,?,?,?)`, [topicId, moduleId, enrollmentId, courseModuleLength, 0, '[]'], (err, result) => {
                     if (err) {
                         console.log(err);
                     }
