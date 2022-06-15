@@ -121,7 +121,7 @@ export const enrolledUserProgressDefault = ((req: Request, res: Response) => {
                     topicId = valTopic[0]
                     console.log(topicId)
 
-                    db.query(`INSERT INTO course_progress (course_topic, course_module, enrollment_id, course_total_modules, course_modules_completed) VALUES(?,?,?,?,?)`, [topicId, moduleId, enrollmentId, courseModuleLength, 0], (err: any, result: any) =>{
+                    db.query(`INSERT INTO course_progress (course_topic, course_module, enrollment_id, course_total_modules, course_modules_completed,course_topics_completed) VALUES(?,?,?,?,?,?)`, [topicId, moduleId, enrollmentId, courseModuleLength, 0, '[]'], (err: any, result: any) =>{
                         if(err){
                             console.log(err);
                         }
@@ -130,6 +130,60 @@ export const enrolledUserProgressDefault = ((req: Request, res: Response) => {
                 
                 });
             }
+    });
+
+});
+
+export const updateTopicsCompleted = ((req: Request, res: Response) => {
+    const {courseTopic,enrollmentId} = req.body
+    db.query('SELECT course_topics_completed FROM course_progress WHERE enrollment_id = ?',[enrollmentId], (err: any, result: any) =>{
+        if(err){
+            console.log(err);
+        }
+        const val = result?.map((dataItem:any) => dataItem?.course_topics_completed)
+        val[0].push(courseTopic);
+
+        db.query(`UPDATE smartle.course_progress SET course_topics_completed = '[${val[0]}]' WHERE enrollment_id = ${enrollmentId}`, (err: any, result: any) =>{
+            if(err){
+                console.log(err);
+            }
+            res.send({result : "success"});
+        });
+    });
+
+});
+export const getAllTopicsCompleted = ((req: Request, res: Response) => {
+    const {id} = req.params
+    db.query('SELECT course_topics_completed FROM smartle.course_progress WHERE enrollment_id = ?',[id], (err: any, result: any) =>{
+        if(err){
+            console.log(err);
+        }
+        const val = result?.map((dataItem:any) => dataItem?.course_topics_completed)
+        res.send(val[0]);
+    });
+
+});
+
+export const courseProgressTopic = ((req: Request, res: Response) => {
+    const {id} = req.body
+    let topics;
+    let progress;
+    db.query('SELECT * FROM smartle.course_progress WHERE enrollment_id = ?',[id], (err: any, result: any) =>{
+        if(err){
+            console.log(err);
+        }
+        const val = result?.map((dataItem:any) => dataItem?.course_topics_completed)
+        topics = val[0].length;
+        console.log(topics)
+        progress = Math.ceil((0.2/topics)*100)
+        console.log(progress)
+
+        db.query(`UPDATE smartle.enrollment SET course_progress = ${progress} WHERE enrollment_id = ?`,[progress,id], (err: any, result: any) =>{
+            if(err){
+                console.log(err);
+            }
+        });
+        res.send({result : "Success"})
     });
 
 });

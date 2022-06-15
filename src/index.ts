@@ -14,8 +14,6 @@ import emailServiceRoutes from './routes/emailServiceRoutes';
 const app = express()
 dotenv.config({path : './.env'})
 
-console.log(process.env.LOL)
-
 app.use(express.json({limit : "30mb"}))
 app.use(express.urlencoded({limit: "30mb", extended: true}))
 app.use(cors())

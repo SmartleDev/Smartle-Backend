@@ -7,6 +7,9 @@ import {
 	updateModuleStatus,
 	updateModuleCompeletedStatus,
 	enrolledUserProgressDefault,
+	updateTopicsCompleted,
+	getAllTopicsCompleted,
+	courseProgressTopic
 } from '../controller/courseProgressController';
 
 const router = express.Router();
@@ -18,5 +21,8 @@ router.post("/updateTopicStatus", updateTopicStatus);
 router.post("/updateModuleStatus", updateModuleStatus);
 router.post("/updateModuleCompeletedStatus", updateModuleCompeletedStatus);
 router.post("/enrolledUserProgressDefault", enrolledUserProgressDefault);
+router.post("/updateTopicsCompleted", updateTopicsCompleted);
+router.get("/getAllTopicsCompleted/:id", getAllTopicsCompleted);
+router.post("/courseProgressTopic", courseProgressTopic);
 
 export default router;
