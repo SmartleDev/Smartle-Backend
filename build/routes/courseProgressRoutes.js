@@ -15,4 +15,5 @@ router.post("/updateModuleCompeletedStatus", courseProgressController_1.updateMo
 router.post("/enrolledUserProgressDefault", courseProgressController_1.enrolledUserProgressDefault);
 router.post("/updateTopicsCompleted", courseProgressController_1.updateTopicsCompleted);
 router.get("/getAllTopicsCompleted/:id", courseProgressController_1.getAllTopicsCompleted);
+router.post("/courseProgressTopic", courseProgressController_1.courseProgressTopic);
 exports.default = router;
