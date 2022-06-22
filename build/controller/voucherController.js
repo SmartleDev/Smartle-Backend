@@ -23,15 +23,15 @@ exports.checkVoucher = ((req, res) => {
         else if (((_d = rows[0]) === null || _d === void 0 ? void 0 : _d.voucher_active) !== 'ACTIVE' || ((_e = rows[0]) === null || _e === void 0 ? void 0 : _e.voucher_active) === '') {
             res.send({ result: "Code not active!" });
         }
+        else if (id !== course_id) {
+            res.send({ result: "Not valid for this course" });
+        }
         else if (((_f = rows[0]) === null || _f === void 0 ? void 0 : _f.voucher_pid) !== "0") {
             if (((_g = rows[0]) === null || _g === void 0 ? void 0 : _g.voucher_pid) !== parent_id) {
                 console.log("voucher_pid " + ((_h = rows[0]) === null || _h === void 0 ? void 0 : _h.voucher_pid));
                 res.send({ result: "Not valid for this parent id" });
             }
             else {
-                if (id !== course_id) {
-                    res.send({ result: "Not valid for this course" });
-                }
                 res.send({ result: parseInt(rows[0].voucher_discount) });
             }
         }
