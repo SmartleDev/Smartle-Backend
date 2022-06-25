@@ -29,6 +29,7 @@ exports.checkVoucher = ((req, res) => {
             }
             else if (((_g = rows[0]) === null || _g === void 0 ? void 0 : _g.voucher_pid) !== "0") {
                 if (((_h = rows[0]) === null || _h === void 0 ? void 0 : _h.voucher_pid) !== parent_id) {
+                    res.send({ result: "Code Invalid or Expired" });
                 }
                 else if (((_j = rows[0]) === null || _j === void 0 ? void 0 : _j.voucher_pid) !== "0") {
                     if (((_k = rows[0]) === null || _k === void 0 ? void 0 : _k.voucher_pid) !== parent_id) {
