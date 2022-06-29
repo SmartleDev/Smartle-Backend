@@ -47,7 +47,7 @@ export const getAllCourses =  ((req: Request, res: Response) => {
 
 export const getAllCoursesOnHome =  ((req: Request, res: Response) => {
 
-    let sql = `SELECT * from course LIMIT ${8}`;
+    let sql = `SELECT * from course WHERE course_displayonhome = TRUE`;
 
     db.query(sql, (err:any, result:any) =>{
         if(err){

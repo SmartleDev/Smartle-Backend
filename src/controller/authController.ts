@@ -2,6 +2,9 @@ import mysql from 'mysql';
 import express, {Request, Response} from 'express';
 import db from '../config/config';
 import 'cross-fetch/polyfill';
+import jwt from 'jsonwebtoken';
+import jwkToPem from 'jwk-to-pem';
+import request from 'request';
 import {
 	CognitoUserPool,
 	CognitoUserAttribute,
@@ -121,6 +124,64 @@ export const login = (req: Request, res: Response) => {
 
 }
 
+export const verifyToken = (req: Request, res : Response) => {
+
+	const userPoolId = poolData.UserPoolId; // Cognito user pool id here    
+	const pool_region = 'ap-south-1'; // Region where your cognito user pool is created
+	const {token} = req.body
+	let pem;
+	
+	
+	// Token verification function
+		console.log('Validating the token...')
+		request({
+			url: `https://cognito-idp.${pool_region}.amazonaws.com/${userPoolId}/.well-known/jwks.json`,
+			json: true
+		}, (error, request, body) => {
+			console.log('validation token..')
+			if (!error && request.statusCode === 200) {
+				let pems : any = {};
+				var keys = body['keys'];
+				for(var i = 0; i < keys.length; i++) {
+					//Convert each key to PEM
+					var key_id = keys[i].kid;
+					var modulus = keys[i].n;
+					var exponent = keys[i].e;
+					var key_type = keys[i].kty;
+					var jwk = { kty: key_type, n: modulus, e: exponent};
+					var pem = jwkToPem(jwk);
+					pems[key_id] = pem;
+				}
+				//validate the token
+				var decodedJwt = jwt.decode(token, {complete: true});
+				if (!decodedJwt) {
+					res.send("Not a valid JWT token");
+					return;
+				}
+	
+				var kid: any= decodedJwt.header.kid;
+				pem = pems[kid];
+				if (!pem) {
+					res.send('Invalid token');
+					return;
+				}
+	
+				jwt.verify(token, pem, function(err: any, payload : any) {
+					if(err) {
+						res.send("Invalid Token.");
+					} else {
+						console.log("Valid Token.");
+						res.send(payload);
+					}
+				});
+			} else {
+				console.log(error)
+				console.log("Error! Unable to download JWKs");
+			}
+		});
+
+}
+
  export const loginParentDataInput = (req: Request, res: Response) => {
 
 	const {parentId, parentName, parentEmail} = req.body
@@ -223,6 +284,50 @@ export const logout = (req: Request, res: Response) => {
 	const cognitoUser = new CognitoUser(userDetails)
 	
 	cognitoUser.signOut();
+}
+
+export const forgotPassword = (req : Request, res: Response) => {
+
+	let {email} = req.body
+
+	const userDetails = {
+		Username: email,
+		Pool: userPool,
+	};
+
+	const cognitoUser = new CognitoUser(userDetails)
+
+
+    cognitoUser.forgotPassword({
+        onSuccess: function (data) {
+            // successfully initiated reset password request
+			  res.send({result : data})
+        },
+        onFailure: function(err) {
+            res.send(err.message);
+        },
+    });
+}
+
+export const forgotPasswordNext = (req: Request, res: Response) =>{
+
+	let {email, verificationCode, newPassword} = req.body
+
+	const userDetails = {
+		Username: email,
+		Pool: userPool,
+	};
+
+	const cognitoUser = new CognitoUser(userDetails)
+
+		cognitoUser.confirmPassword(verificationCode, newPassword, {
+			onSuccess() {
+				res.send('Password confirmed!');
+			},
+			onFailure(err) {
+				res.send(err);
+			}
+		});
 }
 
 export const passwordLessLogin = (req: Request, res: Response) => {

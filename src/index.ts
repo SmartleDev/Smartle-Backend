@@ -10,6 +10,7 @@ import authRoutes from './routes/authRoutes';
 import enrollmentRoutes from './routes/enrollmentRoutes';
 import courseProgressRoutes from './routes/courseProgressRoutes';
 import emailServiceRoutes from './routes/emailServiceRoutes';
+import voucherRoutes from './routes/voucherRoutes';
 
 const app = express()
 dotenv.config({path : './.env'})
@@ -32,6 +33,7 @@ app.use('/', authRoutes);
 app.use('/', enrollmentRoutes);
 app.use('/', courseProgressRoutes);
 app.use('/', emailServiceRoutes);
+app.use('/', voucherRoutes);
 
 app.get("/", (req: Request, res: Response): void => {
   res.json({ message: "Smartle Backend" });

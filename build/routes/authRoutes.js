@@ -8,12 +8,15 @@ const authController_1 = require("../controller/authController");
 const router = express_1.default.Router();
 router.post("/signup", authController_1.signUp);
 router.post("/login", authController_1.login);
+router.post("/verifyToken", authController_1.verifyToken);
 router.post("/logout", authController_1.logout);
 router.post("/code", authController_1.confrimCode);
 router.post("/getUser", authController_1.getAllUsers);
 router.post("/resendcode", authController_1.resendCode);
 router.post("/rememberme", authController_1.rememberDevice);
 router.post("/loginwithoutpass", authController_1.passwordLessLogin);
+router.post("/forgotPassword", authController_1.forgotPassword);
+router.post("/forgotPasswordNext", authController_1.forgotPasswordNext);
 //parent and child routes
 router.post("/parentpopluate", authController_1.loginParentDataInput);
 router.post("/selectlearner", authController_1.childrenSelect);

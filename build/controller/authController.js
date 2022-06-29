@@ -3,9 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createChild = exports.childrenSelect = exports.passwordLessLogin = exports.logout = exports.rememberDevice = exports.resendCode = exports.getAllUsers = exports.loginParentDataInput = exports.login = exports.confrimCode = exports.signUp = void 0;
+exports.createChild = exports.childrenSelect = exports.passwordLessLogin = exports.forgotPasswordNext = exports.forgotPassword = exports.logout = exports.rememberDevice = exports.resendCode = exports.getAllUsers = exports.loginParentDataInput = exports.verifyToken = exports.login = exports.confrimCode = exports.signUp = void 0;
 const config_1 = __importDefault(require("../config/config"));
 require("cross-fetch/polyfill");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const jwk_to_pem_1 = __importDefault(require("jwk-to-pem"));
+const request_1 = __importDefault(require("request"));
 const amazon_cognito_identity_js_1 = require("amazon-cognito-identity-js");
 const poolData = {
     UserPoolId: 'ap-south-1_aFlE9qxGz',
@@ -91,6 +94,60 @@ const login = (req, res) => {
     });
 };
 exports.login = login;
+const verifyToken = (req, res) => {
+    const userPoolId = poolData.UserPoolId; // Cognito user pool id here    
+    const pool_region = 'ap-south-1'; // Region where your cognito user pool is created
+    const { token } = req.body;
+    let pem;
+    // Token verification function
+    console.log('Validating the token...');
+    (0, request_1.default)({
+        url: `https://cognito-idp.${pool_region}.amazonaws.com/${userPoolId}/.well-known/jwks.json`,
+        json: true
+    }, (error, request, body) => {
+        console.log('validation token..');
+        if (!error && request.statusCode === 200) {
+            let pems = {};
+            var keys = body['keys'];
+            for (var i = 0; i < keys.length; i++) {
+                //Convert each key to PEM
+                var key_id = keys[i].kid;
+                var modulus = keys[i].n;
+                var exponent = keys[i].e;
+                var key_type = keys[i].kty;
+                var jwk = { kty: key_type, n: modulus, e: exponent };
+                var pem = (0, jwk_to_pem_1.default)(jwk);
+                pems[key_id] = pem;
+            }
+            //validate the token
+            var decodedJwt = jsonwebtoken_1.default.decode(token, { complete: true });
+            if (!decodedJwt) {
+                res.send("Not a valid JWT token");
+                return;
+            }
+            var kid = decodedJwt.header.kid;
+            pem = pems[kid];
+            if (!pem) {
+                res.send('Invalid token');
+                return;
+            }
+            jsonwebtoken_1.default.verify(token, pem, function (err, payload) {
+                if (err) {
+                    res.send("Invalid Token.");
+                }
+                else {
+                    console.log("Valid Token.");
+                    res.send(payload);
+                }
+            });
+        }
+        else {
+            console.log(error);
+            console.log("Error! Unable to download JWKs");
+        }
+    });
+};
+exports.verifyToken = verifyToken;
 const loginParentDataInput = (req, res) => {
     const { parentId, parentName, parentEmail } = req.body;
     config_1.default.query('INSERT INTO parent (parent_id, parent_name, parent_email) VALUES(?,?,?)', [parentId, parentName, parentEmail], (err, result) => {
@@ -170,6 +227,41 @@ const logout = (req, res) => {
     cognitoUser.signOut();
 };
 exports.logout = logout;
+const forgotPassword = (req, res) => {
+    let { email } = req.body;
+    const userDetails = {
+        Username: email,
+        Pool: userPool,
+    };
+    const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
+    cognitoUser.forgotPassword({
+        onSuccess: function (data) {
+            // successfully initiated reset password request
+            res.send({ result: data });
+        },
+        onFailure: function (err) {
+            res.send(err.message);
+        },
+    });
+};
+exports.forgotPassword = forgotPassword;
+const forgotPasswordNext = (req, res) => {
+    let { email, verificationCode, newPassword } = req.body;
+    const userDetails = {
+        Username: email,
+        Pool: userPool,
+    };
+    const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
+    cognitoUser.confirmPassword(verificationCode, newPassword, {
+        onSuccess() {
+            res.send('Password confirmed!');
+        },
+        onFailure(err) {
+            res.send(err);
+        }
+    });
+};
+exports.forgotPasswordNext = forgotPasswordNext;
 const passwordLessLogin = (req, res) => {
     const { email, password } = req.body;
     const loginDetails = {
