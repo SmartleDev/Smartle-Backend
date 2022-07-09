@@ -234,14 +234,24 @@ const forgotPassword = (req, res) => {
         Pool: userPool,
     };
     const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
-    cognitoUser.forgotPassword({
-        onSuccess: function (data) {
-            // successfully initiated reset password request
-            res.send({ result: data });
-        },
-        onFailure: function (err) {
-            res.send(err.message);
-        },
+    config_1.default.query('SELECT * FROM smartle.parent WHERE parent_email = ?;', [email], (err, rows) => {
+        if (err) {
+            console.log(err);
+        }
+        if ((rows === null || rows === void 0 ? void 0 : rows.length) === 0) {
+            res.send("Enter Email is not Registed Please Try with Another Email");
+        }
+        else {
+            cognitoUser.forgotPassword({
+                onSuccess: function (data) {
+                    // successfully initiated reset password request
+                    res.send([data]);
+                },
+                onFailure: function (err) {
+                    res.send(err);
+                },
+            });
+        }
     });
 };
 exports.forgotPassword = forgotPassword;

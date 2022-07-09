@@ -3,10 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRecommendedCourses = exports.getEnrolledCourseView = exports.getModuleView = exports.getTopicforModule = exports.getModuleforCourse = exports.getCourseView = exports.getAllCoursesOnHome = exports.getAllCourses = void 0;
+exports.getRecommendedCourses = exports.getEnrolledCourseView = exports.getModuleView = exports.getTopicforModule = exports.getModuleforCourse = exports.getCourseDetailsHome = exports.getCourseGeneralView = exports.getCourseView = exports.getAllCoursesOnHome = exports.getAllCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getAllCourses = ((req, res) => {
-    let sql = `SELECT * from course`;
+    let sql = `SELECT * from smartle.course_general`;
     config_1.default.query(sql, (err, result) => {
         if (err) {
             console.log(err);
@@ -22,7 +22,7 @@ exports.getAllCourses = ((req, res) => {
             res.redirect(`/?page=` + encodeURIComponent('1'));
         }
         const startingLimit = (page - 1) * resultsPerPage;
-        sql = `SELECT * from course`;
+        sql = `SELECT * from smartle.course_general`;
         config_1.default.query(sql, (err, result) => {
             if (err) {
                 console.log(err);
@@ -38,7 +38,7 @@ exports.getAllCourses = ((req, res) => {
     });
 });
 exports.getAllCoursesOnHome = ((req, res) => {
-    let sql = `SELECT * from course WHERE course_displayonhome = TRUE`;
+    let sql = `SELECT * FROM smartle.course_general WHERE course_displayonhome = TRUE;`;
     config_1.default.query(sql, (err, result) => {
         if (err) {
             console.log(err);
@@ -48,8 +48,27 @@ exports.getAllCoursesOnHome = ((req, res) => {
 });
 exports.getCourseView = ((req, res) => {
     let course_id = req.params.id;
-    let sql = `SELECT * FROM course WHERE course_id = ${course_id}`;
+    let sql = `SELECT * FROM smartle.course WHERE course_id = "${course_id}"`;
     config_1.default.query(sql, (err, rows) => {
+        if (err) {
+            console.log(err);
+        }
+        res.send(rows);
+    });
+});
+exports.getCourseGeneralView = ((req, res) => {
+    let course_id = req.params.id;
+    let sql = `SELECT * FROM smartle.course_general WHERE course_title = "${course_id}"`;
+    config_1.default.query(sql, (err, rows) => {
+        if (err) {
+            console.log(err);
+        }
+        res.send(rows);
+    });
+});
+exports.getCourseDetailsHome = ((req, res) => {
+    let { course_title, course_age, course_type } = req.body;
+    config_1.default.query(`SELECT * FROM smartle.course WHERE course_title = ? AND course_age = ? AND course_type = ?`, [course_title, course_age, course_type], (err, rows) => {
         if (err) {
             console.log(err);
         }
@@ -100,7 +119,7 @@ exports.getRecommendedCourses = ((req, res) => {
     if (learnerAge === 9) {
         learnerAge = 8;
     }
-    let sql = `SELECT * FROM smartle.course WHERE course_age REGEXP ${learnerAge}`;
+    let sql = `SELECT * FROM smartle.course_general WHERE course_age REGEXP ${learnerAge}`;
     config_1.default.query(sql, (err, rows) => {
         if (err) {
             console.log(err);

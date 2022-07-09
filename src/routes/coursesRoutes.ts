@@ -7,6 +7,8 @@ import {
   getTopicforModule,
   getModuleView,
   getRecommendedCourses,
+  getCourseGeneralView,
+  getCourseDetailsHome,
 } from "../controller/coursesController";
 
 const router = express.Router();
@@ -15,6 +17,8 @@ router.get("/courses", getAllCourses);
 router.get("/coursesonhome", getAllCoursesOnHome);
 router.get("/getmoduleforcourse/:id", getModuleforCourse);
 router.get("/getcourseview/:id", getCourseView);
+router.get("/getcoursegeneralview/:id", getCourseGeneralView);
+router.post("/getCourseDetailsHome", getCourseDetailsHome);
 router.get("/gettopicformodule/:id", getTopicforModule);
 router.get("/getModuleView/:id", getModuleView);
 router.post("/getRecommendedCourses", getRecommendedCourses);

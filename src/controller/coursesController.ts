@@ -4,7 +4,7 @@ import db from '../config/config';
 
 export const getAllCourses =  ((req: Request, res: Response) => {
 
-    let sql = `SELECT * from course`;
+    let sql = `SELECT * from smartle.course_general`;
 
     db.query(sql, (err:any, result:any) =>{
         if(err){
@@ -24,7 +24,7 @@ export const getAllCourses =  ((req: Request, res: Response) => {
         }
 
         const startingLimit = (page - 1) * resultsPerPage;
-        sql = `SELECT * from course`;
+        sql = `SELECT * from smartle.course_general`;
         
         db.query(sql, (err:any, result:any) =>{
             if(err){
@@ -47,7 +47,7 @@ export const getAllCourses =  ((req: Request, res: Response) => {
 
 export const getAllCoursesOnHome =  ((req: Request, res: Response) => {
 
-    let sql = `SELECT * from course WHERE course_displayonhome = TRUE`;
+    let sql = `SELECT * FROM smartle.course_general WHERE course_displayonhome = TRUE;`;
 
     db.query(sql, (err:any, result:any) =>{
         if(err){
@@ -59,8 +59,29 @@ export const getAllCoursesOnHome =  ((req: Request, res: Response) => {
 
 export const getCourseView =  ((req: Request, res: Response) => {
     let course_id = req.params.id;
-    let sql = `SELECT * FROM course WHERE course_id = ${course_id}`;
+    let sql = `SELECT * FROM smartle.course WHERE course_id = "${course_id}"`;
     db.query(sql, (err: any, rows: any) =>{
+        if(err){
+            console.log(err);
+        }
+        res.send(rows);
+    });
+});
+
+export const getCourseGeneralView =  ((req: Request, res: Response) => {
+    let course_id = req.params.id;
+    let sql = `SELECT * FROM smartle.course_general WHERE course_title = "${course_id}"`;
+    db.query(sql, (err: any, rows: any) =>{
+        if(err){
+            console.log(err);
+        }
+        res.send(rows);
+    });
+});
+
+export const getCourseDetailsHome =  ((req: Request, res: Response) => {
+    let {course_title, course_age, course_type} = req.body;
+    db.query(`SELECT * FROM smartle.course WHERE course_title = ? AND course_age = ? AND course_type = ?`,[course_title, course_age, course_type], (err: any, rows: any) =>{
         if(err){
             console.log(err);
         }
@@ -119,7 +140,7 @@ export const getRecommendedCourses =  ((req: Request, res: Response) => {
         learnerAge = 8
     }
 
-    let sql = `SELECT * FROM smartle.course WHERE course_age REGEXP ${learnerAge}`;
+    let sql = `SELECT * FROM smartle.course_general WHERE course_age REGEXP ${learnerAge}`;
     db.query(sql, (err: any, rows: any) =>{
         if(err){
             console.log(err);

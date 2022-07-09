@@ -10,6 +10,8 @@ router.get("/courses", coursesController_1.getAllCourses);
 router.get("/coursesonhome", coursesController_1.getAllCoursesOnHome);
 router.get("/getmoduleforcourse/:id", coursesController_1.getModuleforCourse);
 router.get("/getcourseview/:id", coursesController_1.getCourseView);
+router.get("/getcoursegeneralview/:id", coursesController_1.getCourseGeneralView);
+router.post("/getCourseDetailsHome", coursesController_1.getCourseDetailsHome);
 router.get("/gettopicformodule/:id", coursesController_1.getTopicforModule);
 router.get("/getModuleView/:id", coursesController_1.getModuleView);
 router.post("/getRecommendedCourses", coursesController_1.getRecommendedCourses);

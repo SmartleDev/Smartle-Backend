@@ -297,16 +297,27 @@ export const forgotPassword = (req : Request, res: Response) => {
 
 	const cognitoUser = new CognitoUser(userDetails)
 
+	db.query('SELECT * FROM smartle.parent WHERE parent_email = ?;',[email], (err: any, rows: any) =>{
+		if(err){
+			console.log(err);
+		}
+		if(rows?.length === 0){
+			res.send("Enter Email is not Registed Please Try with Another Email")
+		}else{
 
-    cognitoUser.forgotPassword({
-        onSuccess: function (data) {
-            // successfully initiated reset password request
-			  res.send({result : data})
-        },
-        onFailure: function(err) {
-            res.send(err.message);
-        },
-    });
+			cognitoUser.forgotPassword({
+				onSuccess: function (data) {
+					// successfully initiated reset password request
+					  res.send([data])
+				},
+				onFailure: function(err) {
+					res.send(err);
+				},
+			});
+		}
+
+	});
+
 }
 
 export const forgotPasswordNext = (req: Request, res: Response) =>{
