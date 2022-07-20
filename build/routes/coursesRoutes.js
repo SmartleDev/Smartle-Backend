@@ -15,4 +15,5 @@ router.post("/getCourseDetailsHome", coursesController_1.getCourseDetailsHome);
 router.get("/gettopicformodule/:id", coursesController_1.getTopicforModule);
 router.get("/getModuleView/:id", coursesController_1.getModuleView);
 router.post("/getRecommendedCourses", coursesController_1.getRecommendedCourses);
+router.post("/registerIntrest", coursesController_1.registerIntrest);
 exports.default = router;

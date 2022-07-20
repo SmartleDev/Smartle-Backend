@@ -9,6 +9,7 @@ import {
   getRecommendedCourses,
   getCourseGeneralView,
   getCourseDetailsHome,
+  registerIntrest
 } from "../controller/coursesController";
 
 const router = express.Router();
@@ -22,5 +23,6 @@ router.post("/getCourseDetailsHome", getCourseDetailsHome);
 router.get("/gettopicformodule/:id", getTopicforModule);
 router.get("/getModuleView/:id", getModuleView);
 router.post("/getRecommendedCourses", getRecommendedCourses);
+router.post("/registerIntrest", registerIntrest);
 
 export default router;
