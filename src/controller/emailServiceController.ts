@@ -33,7 +33,7 @@ const emailService = (emailTo : any, body : any, subject : any) => {
                 Data : `${subject}`
             }
         },
-        Source : "adeeb.shah@smartle.co"
+        Source : "notifications@smartle.co"
     };
 
    return ses.sendEmail(params).promise();
@@ -213,6 +213,79 @@ export const enrollTrialCourseEmailService  = ((req: Request, res: Response) => 
 	  } catch (error) {
 		  res.status(404).json( {message : 'Error'} )
 	  }
+});
+
+
+export const contactUs = ((req: Request, res: Response) => {
+
+    const {name, email, contactno, message, contacting_as} = req.body
+    
+    db.query(`INSERT INTO smartle.contactus (name, email, contactno, message, contacting_as) VALUES(?,?,?,?,?)`, [name, email, contactno, message, contacting_as], (err: any, result: any) =>{
+        if(err){
+            console.log(err);
+        }
+    });
+
+    const subject = `User Contacted Smartle:`
+
+    const body = `
+
+        <h1>User has Contacted Smartle</h1>
+        <h2>Name: ${name}</h2>
+        <h2>Email: ${email}</h2>
+        <h2>Contact-No: ${contactno}</h2>
+        <h2>Contact-As: ${contacting_as}</h2>
+        <h2>Message: ${message}</h2>
+    `
+
+
+    emailService("adeeb.shah@smartle.co", body, subject).then((val) => {
+        console.log(val)
+        res.send("Email Sent Sucessfully")
+    }).catch((err: any) => {
+        res.send("Error" + err)
+    })
+    
+});
+
+export const registerIntrest = ((req: Request, res: Response) => {
+
+    const {course_name,  course_type, course_age, user_email, course_id} = req.body
+
+    var today = new Date();
+
+    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
+    var dateTime = date+' '+time;
+    
+    db.query(`INSERT INTO smartle.registred_interest (course_name,  course_type, course_age, user_email, course_id, date_and_time) VALUES(?,?,?,?,?,?)`, [course_name, course_type, course_age, user_email, course_id, dateTime], (err: any, result: any) =>{
+        if(err){
+            console.log(err);
+        }
+    });
+
+    const subject = `Course Interest Smartle:`
+
+    const body = `
+
+        <h1>User has Registred Intrested in a Course at Smartle</h1>
+        <h2>Course: ${course_name}</h2>
+        <h2>Type: ${course_type}</h2>
+        <h2>Age-Group: ${course_age}</h2>
+        <h2>User E-mail: ${user_email}</h2>
+        <h2>Date and Time: ${dateTime}</h2>
+    `
+
+
+    emailService("adeeb.shah@smartle.co", body, subject).then((val) => {
+        console.log(val)
+        res.send("Email Sent Sucessfully")
+    }).catch((err: any) => {
+        res.send("Error" + err)
+    })
+    
 });
 
 

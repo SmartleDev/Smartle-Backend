@@ -148,16 +148,3 @@ export const getRecommendedCourses =  ((req: Request, res: Response) => {
         res.send(rows);
     });
 });
-
-export const registerIntrest = ((req: Request, res: Response) => {
-
-    const {course_name,  course_type, course_age, user_email, course_id} = req.body
-    
-    db.query(`INSERT INTO smartle.registred_interest (course_name,  course_type, course_age, user_email, course_id) VALUES(?,?,?,?,?)`, [course_name, course_type, course_age, user_email, course_id], (err: any, result: any) =>{
-        if(err){
-            console.log(err);
-        }
-        res.send({result: "success"});
-    });
-    
-});

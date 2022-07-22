@@ -10,4 +10,6 @@ router.post("/accountCreationEmailService", emailServiceController_1.accountCrea
 router.post("/addLearnerEmailService", emailServiceController_1.addLearnerEmailService);
 router.post("/enrollCourseEmailService", emailServiceController_1.enrollCourseEmailService);
 router.post("/enrollTrialCourseEmailService", emailServiceController_1.enrollTrialCourseEmailService);
+router.post("/contactus", emailServiceController_1.contactUs);
+router.post("/registerIntrest", emailServiceController_1.registerIntrest);
 exports.default = router;

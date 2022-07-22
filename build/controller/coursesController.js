@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerIntrest = exports.getRecommendedCourses = exports.getEnrolledCourseView = exports.getModuleView = exports.getTopicforModule = exports.getModuleforCourse = exports.getCourseDetailsHome = exports.getCourseGeneralView = exports.getCourseView = exports.getAllCoursesOnHome = exports.getAllCourses = void 0;
+exports.getRecommendedCourses = exports.getEnrolledCourseView = exports.getModuleView = exports.getTopicforModule = exports.getModuleforCourse = exports.getCourseDetailsHome = exports.getCourseGeneralView = exports.getCourseView = exports.getAllCoursesOnHome = exports.getAllCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getAllCourses = ((req, res) => {
     let sql = `SELECT * from smartle.course_general`;
@@ -125,14 +125,5 @@ exports.getRecommendedCourses = ((req, res) => {
             console.log(err);
         }
         res.send(rows);
-    });
-});
-exports.registerIntrest = ((req, res) => {
-    const { course_name, course_type, course_age, user_email, course_id } = req.body;
-    config_1.default.query(`INSERT INTO smartle.registred_interest (course_name,  course_type, course_age, user_email, course_id) VALUES(?,?,?,?,?)`, [course_name, course_type, course_age, user_email, course_id], (err, result) => {
-        if (err) {
-            console.log(err);
-        }
-        res.send({ result: "success" });
     });
 });

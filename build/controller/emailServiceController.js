@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.enrollTrialCourseEmailService = exports.enrollCourseEmailService = exports.addLearnerEmailService = exports.accountCreationEmailService = void 0;
+exports.registerIntrest = exports.contactUs = exports.enrollTrialCourseEmailService = exports.enrollCourseEmailService = exports.addLearnerEmailService = exports.accountCreationEmailService = void 0;
 const config_1 = __importDefault(require("../config/config"));
 const aws_sdk_1 = __importDefault(require("aws-sdk"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -32,7 +32,7 @@ const emailService = (emailTo, body, subject) => {
                 Data: `${subject}`
             }
         },
-        Source: "adeeb.shah@smartle.co"
+        Source: "notifications@smartle.co"
     };
     return ses.sendEmail(params).promise();
 };
@@ -170,4 +170,56 @@ exports.enrollTrialCourseEmailService = ((req, res) => {
     catch (error) {
         res.status(404).json({ message: 'Error' });
     }
+});
+exports.contactUs = ((req, res) => {
+    const { name, email, contactno, message, contacting_as } = req.body;
+    config_1.default.query(`INSERT INTO smartle.contactus (name, email, contactno, message, contacting_as) VALUES(?,?,?,?,?)`, [name, email, contactno, message, contacting_as], (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+    });
+    const subject = `User Contacted Smartle:`;
+    const body = `
+
+        <h1>User has Contacted Smartle</h1>
+        <h2>Name: ${name}</h2>
+        <h2>Email: ${email}</h2>
+        <h2>Contact-No: ${contactno}</h2>
+        <h2>Contact-As: ${contacting_as}</h2>
+        <h2>Message: ${message}</h2>
+    `;
+    emailService("adeeb.shah@smartle.co", body, subject).then((val) => {
+        console.log(val);
+        res.send("Email Sent Sucessfully");
+    }).catch((err) => {
+        res.send("Error" + err);
+    });
+});
+exports.registerIntrest = ((req, res) => {
+    const { course_name, course_type, course_age, user_email, course_id } = req.body;
+    var today = new Date();
+    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    var dateTime = date + ' ' + time;
+    config_1.default.query(`INSERT INTO smartle.registred_interest (course_name,  course_type, course_age, user_email, course_id, date_and_time) VALUES(?,?,?,?,?,?)`, [course_name, course_type, course_age, user_email, course_id, dateTime], (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+    });
+    const subject = `Course Interest Smartle:`;
+    const body = `
+
+        <h1>User has Registred Intrested in a Course at Smartle</h1>
+        <h2>Course: ${course_name}</h2>
+        <h2>Type: ${course_type}</h2>
+        <h2>Age-Group: ${course_age}</h2>
+        <h2>User E-mail: ${user_email}</h2>
+        <h2>Date and Time: ${dateTime}</h2>
+    `;
+    emailService("adeeb.shah@smartle.co", body, subject).then((val) => {
+        console.log(val);
+        res.send("Email Sent Sucessfully");
+    }).catch((err) => {
+        res.send("Error" + err);
+    });
 });
