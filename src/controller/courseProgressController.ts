@@ -141,7 +141,7 @@ export const updateTopicsCompleted = ((req: Request, res: Response) => {
             console.log(err);
         }
         const val = result?.map((dataItem:any) => dataItem?.course_topics_completed)
-        val[0].push(courseTopic);
+        //val[0].push(courseTopic);
 
         db.query(`UPDATE smartle.course_progress SET course_topics_completed = '[${val[0]}]' WHERE enrollment_id = ${enrollmentId}`, (err: any, result: any) =>{
             if(err){

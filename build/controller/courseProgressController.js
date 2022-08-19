@@ -123,7 +123,7 @@ exports.updateTopicsCompleted = ((req, res) => {
             console.log(err);
         }
         const val = result === null || result === void 0 ? void 0 : result.map((dataItem) => dataItem === null || dataItem === void 0 ? void 0 : dataItem.course_topics_completed);
-        val[0].push(courseTopic);
+        //val[0].push(courseTopic);
         config_1.default.query(`UPDATE smartle.course_progress SET course_topics_completed = '[${val[0]}]' WHERE enrollment_id = ${enrollmentId}`, (err, result) => {
             if (err) {
                 console.log(err);

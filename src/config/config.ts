@@ -6,7 +6,7 @@ dotenv.config()
 export default mysql.createConnection({
     host : process.env.HOST,
     port : 3306,
-    user: process.env.USER,
+    user: "smartleadmin",
     password : process.env.PASSWORD,
     database : process.env.DATABASE
-})
+});

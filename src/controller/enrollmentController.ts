@@ -48,7 +48,7 @@ export const getInstructorDetails =  ((req: Request, res: Response) => {
 
 export const getSessionView =  ((req: Request, res: Response) => {
     let {instructorId, courseId} = req.body;
-    db.query(` SELECT * FROM smartle.session WHERE course_id = ? AND session_avalibility > 0 AND date(session_date) >= curdate() ORDER BY session_datetime`, [courseId], (err: any, result: any) =>{
+    db.query(` SELECT * FROM smartle.session WHERE course_id = ? AND session_avalibility > 0 AND date(session_date) >= curdate() ORDER BY session_date ASC`, [courseId], (err: any, result: any) =>{
         if(err){
             console.log(err);
         }
@@ -137,6 +137,15 @@ export const getTopicContent =  ((req: Request, res: Response) => {
     });
 }); 
 
+export const getKeyEvents = ((req: Request, res: Response) =>{
+    let {student_id} = req.body;
+    db.query(`SELECT * FROM smartle.enrollment INNER JOIN smartle.session ON smartle.enrollment.session_id=smartle.session.session_id WHERE student_id=${student_id};`, (err: any, result: any) =>{
+        if(err){
+            console.log(err);
+        }
+        res.send(result);
+    });
+})
 
 
 

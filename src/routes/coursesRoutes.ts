@@ -8,7 +8,8 @@ import {
   getModuleView,
   getRecommendedCourses,
   getCourseGeneralView,
-  getCourseDetailsHome
+  getCourseDetailsHome,
+  getCourseName
 } from "../controller/coursesController";
 
 const router = express.Router();
@@ -22,5 +23,6 @@ router.post("/getCourseDetailsHome", getCourseDetailsHome);
 router.get("/gettopicformodule/:id", getTopicforModule);
 router.get("/getModuleView/:id", getModuleView);
 router.post("/getRecommendedCourses", getRecommendedCourses);
+router.post("/getCourseName", getCourseName);
 
 export default router;

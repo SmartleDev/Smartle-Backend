@@ -11,6 +11,7 @@ import {
   convertTrialToBuyCourse,
   updateSessionAvaliablity,
   getTopicContent,
+  getKeyEvents
 } from "../controller/enrollmentController";
 
 const router = express.Router();
@@ -26,5 +27,6 @@ router.post("/verifyUserEnrollment", verifyUserEnrollment);
 router.post("/convertTrialToBuyCourse", convertTrialToBuyCourse);
 router.post("/updateSessionAvaliablity", updateSessionAvaliablity);
 router.get("/getTopicContent/:id", getTopicContent);
+router.post("/getKeyEvents/", getKeyEvents);
 
 export default router;

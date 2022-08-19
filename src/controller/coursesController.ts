@@ -148,3 +148,13 @@ export const getRecommendedCourses =  ((req: Request, res: Response) => {
         res.send(rows);
     });
 });
+
+export const getCourseName =  ((req: Request, res: Response) => {
+    let {courseID} = req.body;
+    db.query(`SELECT course_name FROM smartle.course WHERE course_id = ?;`, [courseID], (err: any, result: any) =>{
+        if(err){
+            console.log(err);
+        }
+        res.send(result);
+    });
+}); 

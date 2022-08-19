@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRecommendedCourses = exports.getEnrolledCourseView = exports.getModuleView = exports.getTopicforModule = exports.getModuleforCourse = exports.getCourseDetailsHome = exports.getCourseGeneralView = exports.getCourseView = exports.getAllCoursesOnHome = exports.getAllCourses = void 0;
+exports.getCourseName = exports.getRecommendedCourses = exports.getEnrolledCourseView = exports.getModuleView = exports.getTopicforModule = exports.getModuleforCourse = exports.getCourseDetailsHome = exports.getCourseGeneralView = exports.getCourseView = exports.getAllCoursesOnHome = exports.getAllCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getAllCourses = ((req, res) => {
     let sql = `SELECT * from smartle.course_general`;
@@ -125,5 +125,14 @@ exports.getRecommendedCourses = ((req, res) => {
             console.log(err);
         }
         res.send(rows);
+    });
+});
+exports.getCourseName = ((req, res) => {
+    let { courseID } = req.body;
+    config_1.default.query(`SELECT course_name FROM smartle.course WHERE course_id = ?;`, [courseID], (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        res.send(result);
     });
 });

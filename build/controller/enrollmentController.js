@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTopicContent = exports.updateSessionAvaliablity = exports.convertTrialToBuyCourse = exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getLearnerCourses = void 0;
+exports.getKeyEvents = exports.getTopicContent = exports.updateSessionAvaliablity = exports.convertTrialToBuyCourse = exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getLearnerCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getLearnerCourses = ((req, res) => {
     let { studentId } = req.body;
@@ -44,7 +44,7 @@ exports.getInstructorDetails = ((req, res) => {
 });
 exports.getSessionView = ((req, res) => {
     let { instructorId, courseId } = req.body;
-    config_1.default.query(` SELECT * FROM smartle.session WHERE course_id = ? AND session_avalibility > 0 AND date(session_date) >= curdate() ORDER BY session_datetime`, [courseId], (err, result) => {
+    config_1.default.query(` SELECT * FROM smartle.session WHERE course_id = ? AND session_avalibility > 0 AND date(session_date) >= curdate() ORDER BY session_date ASC`, [courseId], (err, result) => {
         if (err) {
             console.log(err);
         }
@@ -121,6 +121,15 @@ exports.updateSessionAvaliablity = ((req, res) => {
 exports.getTopicContent = ((req, res) => {
     let topicId = req.params.id;
     config_1.default.query(`SELECT * FROM smartle.topic WHERE topic_id = ${topicId};`, (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        res.send(result);
+    });
+});
+exports.getKeyEvents = ((req, res) => {
+    let { student_id } = req.body;
+    config_1.default.query(`SELECT * FROM smartle.enrollment INNER JOIN smartle.session ON smartle.enrollment.session_id=smartle.session.session_id WHERE student_id=${student_id};`, (err, result) => {
         if (err) {
             console.log(err);
         }
