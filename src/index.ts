@@ -42,6 +42,7 @@ app.get("/", (req: Request, res: Response): void => {
   res.json({ message: "Smartle Backend" });
 });
 
-app.listen("8000", (): void => {
+
+app.listen(process.env.PORT, (): void => {
   console.log("Server Running!");
 });
