@@ -43,6 +43,6 @@ app.get("/", (req: Request, res: Response): void => {
 });
 
 
-app.listen(process.env.PORT, (): void => {
+app.listen(process.env.PORT || 8000, (): void => {
   console.log("Server Running!");
 });

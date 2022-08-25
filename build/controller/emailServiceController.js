@@ -77,7 +77,7 @@ exports.addLearnerEmailService = ((req, res) => {
                 console.log(err);
                 res.send({ message: "error" });
             }
-            else {
+            else if ((result === null || result === void 0 ? void 0 : result.length) === 1) {
                 studenDetails = { student: result[(result === null || result === void 0 ? void 0 : result.length) - 1], number_of_students: result.length };
                 body =
                     ` <div style="width:80%; margin:auto">
@@ -97,13 +97,16 @@ exports.addLearnerEmailService = ((req, res) => {
      
            </div>
        </div>`;
+                emailService(emailTo, body, subject).then((val) => {
+                    console.log(val);
+                    res.send("Email Sent Sucessfully");
+                }).catch((err) => {
+                    res.send("Error" + err);
+                });
             }
-            emailService(emailTo, body, subject).then((val) => {
-                console.log(val);
-                res.send("Email Sent Sucessfully");
-            }).catch((err) => {
-                res.send("Error" + err);
-            });
+            else {
+                res.send("Congratualtions");
+            }
         });
     }
     catch (error) {

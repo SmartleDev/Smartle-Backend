@@ -97,7 +97,7 @@ export const addLearnerEmailService  = ((req: Request, res: Response) => {
 		   if(err){
 			   console.log(err);
 			   res.send({message : "error"})
-		   }else{
+		   }else if (result?.length === 1){
             studenDetails =  {student : result[result?.length - 1], number_of_students : result.length}
 
            body = 
@@ -119,15 +119,16 @@ export const addLearnerEmailService  = ((req: Request, res: Response) => {
            </div>
        </div>`
 
-		   }
+       emailService(emailTo, body, subject).then((val) => {
+        console.log(val)
+        res.send("Email Sent Sucessfully")
+    }).catch((err: any) => {
+        res.send("Error" + err)
+    })
+		   }else{
+            res.send("Congratualtions")
+           }
 
-           emailService(emailTo, body, subject).then((val) => {
-            console.log(val)
-            res.send("Email Sent Sucessfully")
-        }).catch((err: any) => {
-            res.send("Error" + err)
-        })
-        
 	   })
   
 	  } catch (error) {

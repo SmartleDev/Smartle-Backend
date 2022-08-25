@@ -42,6 +42,6 @@ app.use('/', homeRoutes_1.default);
 app.get("/", (req, res) => {
     res.json({ message: "Smartle Backend" });
 });
-app.listen("8000", () => {
+app.listen(process.env.PORT || 8000, () => {
     console.log("Server Running!");
 });
