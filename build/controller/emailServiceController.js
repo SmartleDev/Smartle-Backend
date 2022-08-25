@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -40,6 +41,50 @@ exports.accountCreationEmailService = ((req, res) => {
     const { emailTo, parentname } = req.body;
     console.log(parentname);
     const subject = `We are glad you are here, ${parentname.split(' ').slice(0, 1).join(' ')}`;
+=======
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.registerIntrest = exports.contactUs = exports.enrollTrialCourseEmailService = exports.enrollCourseEmailService = exports.addLearnerEmailService = exports.accountCreationEmailService = void 0;
+const config_1 = __importDefault(require("../config/config"));
+const aws_sdk_1 = __importDefault(require("aws-sdk"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const ses = new aws_sdk_1.default.SES({
+    apiVersion: "2022-05-09",
+    accessKeyId: process.env.ACCESSKEY,
+    secretAccessKey: process.env.SECRETKEY,
+    region: process.env.REGION
+});
+const emailService = (emailTo, body, subject) => {
+    const params = {
+        Destination: {
+            ToAddresses: [emailTo]
+        },
+        Message: {
+            Body: {
+                // Text : {
+                //     Data : "Trial Run for the SES" + body
+                // },
+                Html: {
+                    Data: body
+                }
+            },
+            Subject: {
+                Data: `${subject}`
+            }
+        },
+        Source: "notifications@smartle.co"
+    };
+    return ses.sendEmail(params).promise();
+};
+exports.accountCreationEmailService = ((req, res) => {
+    const { emailTo, parentname } = req.body;
+    console.log(parentname);
+    const subject = `We are glad you are here, ${parentname.split(' ').slice(0, 1).join(' ')}`;
+>>>>>>> Stashed changes
     const body = `
     
     <div style="width:80%; margin:auto">
@@ -58,6 +103,7 @@ exports.accountCreationEmailService = ((req, res) => {
         <div style="margin-top:20px; text-align:center"><button style="text-align:center;margin:auto;padding:2px 30px 2px 30px;color:white;background: #917EBD;box-shadow:0px 8px 20px rgba(0, 0, 0, 0.1);border-radius: 15px"><a href='www.dev.smartle.co' target="_blank" style="color:white; font-size: 16px;font-weight:800; text-decoration:none">Get Started</a></button></div>
         </div>
     </div>
+<<<<<<< Updated upstream
     `;
     emailService(emailTo, body, subject).then((val) => {
         //console.log(val)
@@ -80,6 +126,30 @@ exports.addLearnerEmailService = ((req, res) => {
             else if ((result === null || result === void 0 ? void 0 : result.length) === 1) {
                 studenDetails = { student: result[(result === null || result === void 0 ? void 0 : result.length) - 1], number_of_students: result.length };
                 body =
+=======
+    `;
+    emailService(emailTo, body, subject).then((val) => {
+        //console.log(val)
+        res.send("Email Sent Sucessfully");
+    }).catch((err) => {
+        res.send("Error" + err);
+    });
+});
+exports.addLearnerEmailService = ((req, res) => {
+    const { emailTo, parentId } = req.body;
+    let studenDetails;
+    let body;
+    const subject = `Smartle cares about your child’s privacy`;
+    try {
+        config_1.default.query(`SELECT * FROM student WHERE parent_id = ?`, [parentId], (err, result) => {
+            if (err) {
+                console.log(err);
+                res.send({ message: "error" });
+            }
+            else {
+                studenDetails = { student: result[(result === null || result === void 0 ? void 0 : result.length) - 1], number_of_students: result.length };
+                body =
+>>>>>>> Stashed changes
                     ` <div style="width:80%; margin:auto">
            <div style="text-align:center; border-bottom-left-radius:40px;
            border-bottom-right-radius:40px;background: linear-gradient(245.75deg, #FFEBF8 -2.86%, #EAE1FF 103.21%)">
@@ -96,6 +166,7 @@ exports.addLearnerEmailService = ((req, res) => {
    <span style="color:#917EBD; font-weight:800">You can also contact us at: talk2us@smartle.co</span></p>
      
            </div>
+<<<<<<< Updated upstream
        </div>`;
                 emailService(emailTo, body, subject).then((val) => {
                     console.log(val);
@@ -129,6 +200,38 @@ exports.enrollCourseEmailService = ((req, res) => {
                 courseDetails = result;
                 subject = `Congratulations, ${studentName.split(' ').slice(0, 1).join(' ')}. You are enrolled in ${(_a = courseDetails[0]) === null || _a === void 0 ? void 0 : _a.course_name}`;
                 body =
+=======
+       </div>`;
+            }
+            emailService(emailTo, body, subject).then((val) => {
+                console.log(val);
+                res.send("Email Sent Sucessfully");
+            }).catch((err) => {
+                res.send("Error" + err);
+            });
+        });
+    }
+    catch (error) {
+        res.status(404).json({ message: 'Error' });
+    }
+});
+exports.enrollCourseEmailService = ((req, res) => {
+    const { emailTo, studentName, courseId } = req.body;
+    let courseDetails;
+    let body;
+    let subject;
+    try {
+        config_1.default.query(`SELECT * FROM course WHERE course_id = ?`, [courseId], (err, result) => {
+            var _a, _b, _c;
+            if (err) {
+                console.log(err);
+                res.send({ message: "error" });
+            }
+            else {
+                courseDetails = result;
+                subject = `Congratulations, ${studentName.split(' ').slice(0, 1).join(' ')}. You are enrolled in ${(_a = courseDetails[0]) === null || _a === void 0 ? void 0 : _a.course_name}`;
+                body =
+>>>>>>> Stashed changes
                     `<div style="width:80%; margin:auto">
           <div style=" border-bottom-left-radius:40px;
           border-bottom-right-radius:40px;background: linear-gradient(245.75deg, #FFEBF8 -2.86%, #EAE1FF 103.21%)">
@@ -147,6 +250,7 @@ exports.enrollCourseEmailService = ((req, res) => {
   </p>
           <div style="margin-top:50px; text-align:center"><a href='www.dev.smartle.co' target="_blank" style="color:white; font-size: 18px;font-weight:800; text-decoration:none;text-align:center;margin:auto;padding:5px 30px 5px 30px;color:white;background: #917EBD;box-shadow:0px 8px 20px rgba(0, 0, 0, 0.1);border-radius: 10px">Begin Learning</a></div>
           </div>
+<<<<<<< Updated upstream
       </div>`;
             }
             emailService(emailTo, body, subject).then((val) => {
@@ -176,6 +280,37 @@ exports.enrollTrialCourseEmailService = ((req, res) => {
             else {
                 courseDetails = result;
                 body =
+=======
+      </div>`;
+            }
+            emailService(emailTo, body, subject).then((val) => {
+                console.log(val);
+                res.send("Email Sent Sucessfully");
+            }).catch((err) => {
+                res.send("Error" + err);
+            });
+        });
+    }
+    catch (error) {
+        res.status(404).json({ message: 'Error' });
+    }
+});
+exports.enrollTrialCourseEmailService = ((req, res) => {
+    const { emailTo, studentName, courseId } = req.body;
+    let courseDetails;
+    let body;
+    const subject = `Trial Course Enrollment`;
+    try {
+        config_1.default.query(`SELECT * FROM course WHERE course_id = ?`, [courseId], (err, result) => {
+            var _a;
+            if (err) {
+                console.log(err);
+                res.send({ message: "error" });
+            }
+            else {
+                courseDetails = result;
+                body =
+>>>>>>> Stashed changes
                     `<h1><span style = 'color : green'>Congratulations</span> ${studentName}, </h1> 
             <h3>You have successfully enrolled into the Trial course ${(_a = courseDetails[0]) === null || _a === void 0 ? void 0 : _a.course_name}</h3>.
           <h4> To begin your  journey, click on the link below:

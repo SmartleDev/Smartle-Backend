@@ -78,7 +78,6 @@ export const accountCreationEmailService  = ((req: Request, res: Response) => {
     
 });
 
-
 export const addLearnerEmailService  = ((req: Request, res: Response) => {
 
     const {emailTo, parentId} = req.body
@@ -195,6 +194,7 @@ export const enrollCourseEmailService  = ((req: Request, res: Response) => {
 	  }
 });
 
+
 export const enrollTrialCourseEmailService  = ((req: Request, res: Response) => {
     console.log(req.body);
     const {emailTo, studentName, courseId} = req.body
@@ -203,7 +203,7 @@ export const enrollTrialCourseEmailService  = ((req: Request, res: Response) => 
 
     let body : any;
 
-    const subject = `Trial Course Enrollment`
+   let subject:any;
 
 
     try {
@@ -215,17 +215,31 @@ export const enrollTrialCourseEmailService  = ((req: Request, res: Response) => 
 			   res.send({message : "error"})
 		   }else{
             courseDetails =  result;
+             subject = `Congratulations, ${studentName.split(' ').slice(0,1).join(' ')}. You are enrolled in Trial for ${courseDetails[0]?.course_name}`;
            body = 
-           `<h1><span style = 'color : green'>Congratulations</span> ${studentName}, </h1> 
-            <h3>You have successfully enrolled into the Trial course ${courseDetails[0]?.course_name}</h3>.
-          <h4> To begin your  journey, click on the link below:
-          <i>www.dev.smartle.co/course/${courseId}</i>
-           <br />
-            All the best! </h4>
-            <h3>If You like the Course Pleaes do Buy the Course From link below</h3>
-            <i>www.dev.smartle.co/bookcourse/${courseId}</i>
-           
-          <h4> In case of any query, you can contact us at: <i>talk2us@smartle.co</i> or reply to this email.</h4>`
+           `      <div style="width:80%; margin:auto">
+           <div style=" border-bottom-left-radius:40px;
+           border-bottom-right-radius:40px;background: linear-gradient(245.75deg, #FFEBF8 -2.86%, #EAE1FF 103.21%)">
+               <div style="margin-left:20px; padding-top:30px"><img src="https://smartle-video-content.s3.amazonaws.com/smartle-logo/smartleblacklogo.png" width="150px" /></div>
+               <div> 
+                          <p style="color:#917EBD; font-size:20px; font-weight:900;margin-left:20px;margin-top:20px;">Congratulations ${studentName.split(' ').slice(0,1).join(' ')} !!</p>
+ 
+                   <p style="font-size:16px; font-weight:500;margin-left:20px;padding-bottom:20px; color:black ">Welcome to ${courseDetails[0]?.course_name} Trial Course</p>
+ 
+               </div>
+           </div>
+           <div style="width:90%; margin:auto">
+ 
+           <p style="margin-top:10px; font-size:16px">You’re enrolled in ${courseDetails[0]?.course_name} trial course<br><br>
+   
+ We are excited you've decided to pursue your learning journey with us. We are excited to have you in our midst. Head on over to your course and start your learning streak now!
+   
+   </p>
+            <div style="color:917EBD;font-size:14px">On subscribing the entire course, you can also view your course schedule in the calendar section in your customized learning page.</div>
+           <div style="margin-top:50px; text-align:center"><a href='www.dev.smartle.co' target="_blank" style="color:white; font-size: 18px;font-weight:800; text-decoration:none;text-align:center;margin:auto;padding:5px 30px 5px 30px;color:white;background: #917EBD;box-shadow:0px 8px 20px rgba(0, 0, 0, 0.1);border-radius: 10px">Begin Learning</a></div>
+           </div>
+  
+       </div>`
 
 		   }
 
