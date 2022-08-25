@@ -196,7 +196,7 @@ export const enrollCourseEmailService  = ((req: Request, res: Response) => {
 });
 
 export const enrollTrialCourseEmailService  = ((req: Request, res: Response) => {
-
+    console.log(req.body);
     const {emailTo, studentName, courseId} = req.body
 
     let courseDetails : any;
@@ -225,7 +225,7 @@ export const enrollTrialCourseEmailService  = ((req: Request, res: Response) => 
             <h3>If You like the Course Pleaes do Buy the Course From link below</h3>
             <i>www.dev.smartle.co/bookcourse/${courseId}</i>
            
-          <h4> In case of any query, you can contact us at: <i>talk2us@smartle.co</i> or reply to this email.</h4.`
+          <h4> In case of any query, you can contact us at: <i>talk2us@smartle.co</i> or reply to this email.</h4>`
 
 		   }
 
