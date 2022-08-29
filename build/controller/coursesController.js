@@ -46,7 +46,6 @@ exports.getAllCoursesOnHome = ((req, res) => {
         }
         res.send(result);
     });
-    config_1.default.end();
 });
 exports.getCourseView = ((req, res) => {
     let course_id = req.params.id;
@@ -57,7 +56,6 @@ exports.getCourseView = ((req, res) => {
         }
         res.send(rows);
     });
-    config_1.default.end();
 });
 exports.getCourseGeneralView = ((req, res) => {
     let course_id = req.params.id;
@@ -68,7 +66,6 @@ exports.getCourseGeneralView = ((req, res) => {
         }
         res.send(rows);
     });
-    config_1.default.end();
 });
 exports.getCourseDetailsHome = ((req, res) => {
     let { course_title, course_age, course_type } = req.body;
@@ -78,7 +75,6 @@ exports.getCourseDetailsHome = ((req, res) => {
         }
         res.send(rows);
     });
-    config_1.default.end();
 });
 exports.getModuleforCourse = ((req, res) => {
     let course_id = req.params.id;
@@ -89,7 +85,6 @@ exports.getModuleforCourse = ((req, res) => {
         }
         res.send(rows);
     });
-    config_1.default.end();
 });
 exports.getTopicforModule = ((req, res) => {
     let moduleId = req.params.id;
@@ -100,7 +95,6 @@ exports.getTopicforModule = ((req, res) => {
         }
         res.send(result);
     });
-    config_1.default.end();
 });
 exports.getModuleView = ((req, res) => {
     let moduleId = req.params.id;
@@ -111,7 +105,6 @@ exports.getModuleView = ((req, res) => {
         }
         res.send(result);
     });
-    config_1.default.end();
 });
 exports.getEnrolledCourseView = ((req, res) => {
     let { moduleId, studentId } = req.body;
@@ -121,7 +114,6 @@ exports.getEnrolledCourseView = ((req, res) => {
         }
         res.send(result);
     });
-    config_1.default.end();
 });
 exports.getRecommendedCourses = ((req, res) => {
     let { learnerAge } = req.body;
@@ -135,7 +127,6 @@ exports.getRecommendedCourses = ((req, res) => {
         }
         res.send(rows);
     });
-    config_1.default.end();
 });
 exports.getCourseName = ((req, res) => {
     let { courseID } = req.body;
@@ -145,5 +136,4 @@ exports.getCourseName = ((req, res) => {
         }
         res.send(result);
     });
-    config_1.default.end();
 });
