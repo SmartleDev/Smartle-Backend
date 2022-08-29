@@ -40,7 +40,7 @@ export const getAllCourses =  ((req: Request, res: Response) => {
 
             res.send({result, page, iterator, numberOfPages});
         })
- 
+        db.end()
     })
 
 });
@@ -55,6 +55,7 @@ export const getAllCoursesOnHome =  ((req: Request, res: Response) => {
         }
         res.send(result);   
     })
+    db.end()
 });
 
 export const getCourseView =  ((req: Request, res: Response) => {
@@ -66,6 +67,7 @@ export const getCourseView =  ((req: Request, res: Response) => {
         }
         res.send(rows);
     });
+    db.end()
 });
 
 export const getCourseGeneralView =  ((req: Request, res: Response) => {
@@ -77,6 +79,7 @@ export const getCourseGeneralView =  ((req: Request, res: Response) => {
         }
         res.send(rows);
     });
+    db.end()
 });
 
 export const getCourseDetailsHome =  ((req: Request, res: Response) => {
@@ -87,6 +90,7 @@ export const getCourseDetailsHome =  ((req: Request, res: Response) => {
         }
         res.send(rows);
     });
+    db.end()
 });
 
 export const getModuleforCourse =  ((req: Request, res: Response) => {
@@ -99,6 +103,7 @@ export const getModuleforCourse =  ((req: Request, res: Response) => {
 
         res.send(rows);
     });
+    db.end()
 });
 
 export const getTopicforModule =  ((req: Request, res: Response) => {
@@ -110,6 +115,7 @@ export const getTopicforModule =  ((req: Request, res: Response) => {
         }
         res.send(result);
     });
+    db.end()
 }); 
 
 export const getModuleView =  ((req: Request, res: Response) => {
@@ -121,6 +127,7 @@ export const getModuleView =  ((req: Request, res: Response) => {
         }
         res.send(result);
     });
+    db.end()
 }); 
 
 export const getEnrolledCourseView =  ((req: Request, res: Response) => {
@@ -131,6 +138,7 @@ export const getEnrolledCourseView =  ((req: Request, res: Response) => {
         }
         res.send(result);
     });
+    db.end()
 }); 
 
 export const getRecommendedCourses =  ((req: Request, res: Response) => {
@@ -147,6 +155,7 @@ export const getRecommendedCourses =  ((req: Request, res: Response) => {
         }
         res.send(rows);
     });
+    db.end()
 });
 
 export const getCourseName =  ((req: Request, res: Response) => {
@@ -157,4 +166,5 @@ export const getCourseName =  ((req: Request, res: Response) => {
         }
         res.send(result);
     });
+    db.end()
 }); 
