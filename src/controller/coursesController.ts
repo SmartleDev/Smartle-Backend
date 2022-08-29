@@ -40,7 +40,6 @@ export const getAllCourses =  ((req: Request, res: Response) => {
 
             res.send({result, page, iterator, numberOfPages});
         })
-        db.end()
     })
 
 });

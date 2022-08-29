@@ -35,7 +35,6 @@ exports.getAllCourses = ((req, res) => {
             }
             res.send({ result, page, iterator, numberOfPages });
         });
-        config_1.default.end();
     });
 });
 exports.getAllCoursesOnHome = ((req, res) => {
