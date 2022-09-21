@@ -52,13 +52,13 @@ exports.getSessionView = ((req, res) => {
     });
 });
 exports.enrollLearner = ((req, res) => {
-    let { courseId, studentId, studentFeeStatus, sessionId, enrollmentType } = req.body;
+    let { courseId, studentId, sessionId, enrollmentType } = req.body;
     config_1.default.query(`SELECT * FROM enrollment WHERE course_id = ? AND student_id = ?`, [courseId, studentId], (err, result) => {
         if (err) {
             console.log(err);
         }
         if (result.length === 0) {
-            config_1.default.query(`INSERT INTO enrollment (course_id, student_id, student_feestatus, course_progress, session_id, enrollment_type) VALUES(?,?,?,?,?,?)`, [courseId, studentId, studentFeeStatus, 0, sessionId, enrollmentType], (err, result) => {
+            config_1.default.query(`INSERT INTO enrollment (course_id, student_id,  course_progress, session_id, enrollment_type) VALUES(?,?,?,?,?)`, [courseId, studentId, 0, sessionId, enrollmentType], (err, result) => {
                 if (err) {
                     console.log(err);
                 }

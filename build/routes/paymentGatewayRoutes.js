@@ -4,7 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const studentController_1 = require("../controller/studentController");
+const paymentGatewayController_1 = require("../controller/paymentGatewayController");
 const router = express_1.default.Router();
-router.get("/email", studentController_1.getAllStudents);
+router.post("/create-checkout-session", paymentGatewayController_1.paymentGateway);
+router.post("/webhook", express_1.default.raw({ type: 'application/json' }), paymentGatewayController_1.paymentWebhook);
 exports.default = router;

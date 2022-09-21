@@ -17,6 +17,7 @@ const emailServiceRoutes_1 = __importDefault(require("./routes/emailServiceRoute
 const voucherRoutes_1 = __importDefault(require("./routes/voucherRoutes"));
 const homeRoutes_1 = __importDefault(require("./routes/homeRoutes"));
 const enterpriseRoutes_1 = __importDefault(require("./routes/enterpriseRoutes"));
+const paymentGatewayRoutes_1 = __importDefault(require("./routes/paymentGatewayRoutes"));
 const app = (0, express_1.default)();
 dotenv_1.default.config({ path: './.env' });
 app.use(express_1.default.json({ limit: "30mb" }));
@@ -41,6 +42,7 @@ app.use('/', emailServiceRoutes_1.default);
 app.use('/', voucherRoutes_1.default);
 app.use('/', homeRoutes_1.default);
 app.use('/', enterpriseRoutes_1.default);
+app.use('/', paymentGatewayRoutes_1.default);
 app.get("/", (req, res) => {
     res.json({ message: "Smartle Backend" });
 });
