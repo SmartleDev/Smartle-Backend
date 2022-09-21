@@ -12,6 +12,7 @@ import emailServiceRoutes from './routes/emailServiceRoutes';
 import voucherRoutes from './routes/voucherRoutes';
 import homeRoutes from './routes/homeRoutes';
 import enterpriseRoutes from './routes/enterpriseRoutes';
+import paymentRoutes from './routes/paymentGatewayRoutes';
 
 const app = express()
 dotenv.config({path : './.env'})
@@ -39,6 +40,7 @@ app.use('/', emailServiceRoutes);
 app.use('/', voucherRoutes);
 app.use('/', homeRoutes);
 app.use('/', enterpriseRoutes);
+app.use('/', paymentRoutes);
 
 app.get("/", (req: Request, res: Response): void => {
   res.json({ message: "Smartle Backend" });
