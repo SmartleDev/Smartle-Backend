@@ -33,7 +33,7 @@ exports.getAllCourses = ((req, res) => {
             if (endingLink < (page + 4)) {
                 iterator -= (page + 4) - numberOfPages;
             }
-            res.send({ result, page, iterator, numberOfPages });
+            res.send({ result, page, iterator, numberOfPages }).end();
         });
     });
 });
@@ -43,7 +43,7 @@ exports.getAllCoursesOnHome = ((req, res) => {
         if (err) {
             console.log(err);
         }
-        res.send(result);
+        res.send(result).end();
     });
 });
 exports.getCourseView = ((req, res) => {
@@ -53,7 +53,7 @@ exports.getCourseView = ((req, res) => {
         if (err) {
             console.log(err);
         }
-        res.send(rows);
+        res.send(rows).end();
     });
 });
 exports.getCourseGeneralView = ((req, res) => {
@@ -63,7 +63,7 @@ exports.getCourseGeneralView = ((req, res) => {
         if (err) {
             console.log(err);
         }
-        res.send(rows);
+        res.send(rows).end();
     });
 });
 exports.getCourseDetailsHome = ((req, res) => {
@@ -72,7 +72,7 @@ exports.getCourseDetailsHome = ((req, res) => {
         if (err) {
             console.log(err);
         }
-        res.send(rows);
+        res.send(rows).end();
     });
 });
 exports.getModuleforCourse = ((req, res) => {
@@ -82,7 +82,7 @@ exports.getModuleforCourse = ((req, res) => {
         if (err) {
             console.log(err);
         }
-        res.send(rows);
+        res.send(rows).end();
     });
 });
 exports.getTopicforModule = ((req, res) => {
@@ -92,7 +92,7 @@ exports.getTopicforModule = ((req, res) => {
         if (err) {
             console.log(err);
         }
-        res.send(result);
+        res.send(result).end();
     });
 });
 exports.getModuleView = ((req, res) => {
@@ -102,7 +102,7 @@ exports.getModuleView = ((req, res) => {
         if (err) {
             console.log(err);
         }
-        res.send(result);
+        res.send(result).end();
     });
 });
 exports.getEnrolledCourseView = ((req, res) => {
@@ -111,7 +111,7 @@ exports.getEnrolledCourseView = ((req, res) => {
         if (err) {
             console.log(err);
         }
-        res.send(result);
+        res.send(result).end();
     });
 });
 exports.getRecommendedCourses = ((req, res) => {
@@ -124,7 +124,7 @@ exports.getRecommendedCourses = ((req, res) => {
         if (err) {
             console.log(err);
         }
-        res.send(rows);
+        res.send(rows).end();
     });
 });
 exports.getCourseName = ((req, res) => {
@@ -133,6 +133,6 @@ exports.getCourseName = ((req, res) => {
         if (err) {
             console.log(err);
         }
-        res.send(result);
+        res.send(result).end();
     });
 });

@@ -37,7 +37,7 @@ exports.signUp = ((req, res) => {
             res.send(err.message || JSON.stringify(err));
             return;
         }
-        res.send(result.user);
+        res.send(result.user).end();
         var cognitoUser = result.user;
     });
 });
@@ -55,7 +55,7 @@ const confrimCode = (req, res) => {
             return;
         }
         console.log(result);
-        res.send(result);
+        res.send(result).end();
     });
 };
 exports.confrimCode = confrimCode;
@@ -89,7 +89,7 @@ const login = (req, res) => {
         },
         onFailure: function (err) {
             console.log(err.message || JSON.stringify(err));
-            res.send(err.message || JSON.stringify(err));
+            res.send(err.message || JSON.stringify(err)).end();
         },
     });
 };
@@ -122,7 +122,7 @@ const verifyToken = (req, res) => {
             //validate the token
             var decodedJwt = jsonwebtoken_1.default.decode(token, { complete: true });
             if (!decodedJwt) {
-                res.send("Not a valid JWT token");
+                res.send("Not a valid JWT token").end();
                 return;
             }
             var kid = decodedJwt.header.kid;
@@ -154,7 +154,7 @@ const loginParentDataInput = (req, res) => {
         if (err) {
             console.log(err);
         }
-        res.send(result);
+        res.send(result).end();
     });
 };
 exports.loginParentDataInput = loginParentDataInput;
@@ -167,7 +167,7 @@ const getAllUsers = (req, res) => {
     const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
     cognitoUser.getUserData(function (err, userData) {
         if (err) {
-            res.send(err.message || JSON.stringify(err));
+            res.send(err.message || JSON.stringify(err)).end();
             return;
         }
         console.log('User data for user ' + userData);
@@ -192,7 +192,7 @@ const resendCode = (req, res) => {
     const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
     cognitoUser.resendConfirmationCode(function (err, result) {
         if (err) {
-            res.send(err.message || JSON.stringify(err));
+            res.send(err.message || JSON.stringify(err)).end();
             return;
         }
         console.log(result);
@@ -209,10 +209,10 @@ const rememberDevice = (req, res) => {
     const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
     cognitoUser.setDeviceStatusRemembered({
         onSuccess: function (result) {
-            res.send('call result: ' + result);
+            res.send('call result: ' + result).end();
         },
         onFailure: function (err) {
-            res.send(err.message || JSON.stringify(err));
+            res.send(err.message || JSON.stringify(err)).end();
         },
     });
 };
@@ -245,10 +245,10 @@ const forgotPassword = (req, res) => {
             cognitoUser.forgotPassword({
                 onSuccess: function (data) {
                     // successfully initiated reset password request
-                    res.send([data]);
+                    res.send([data]).end();
                 },
                 onFailure: function (err) {
-                    res.send(err);
+                    res.send(err).end();
                 },
             });
         }
@@ -264,10 +264,10 @@ const forgotPasswordNext = (req, res) => {
     const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
     cognitoUser.confirmPassword(verificationCode, newPassword, {
         onSuccess() {
-            res.send('Password confirmed!');
+            res.send('Password confirmed!').end();
         },
         onFailure(err) {
-            res.send(err);
+            res.send(err).end();
         }
     });
 };
@@ -293,7 +293,7 @@ const passwordLessLogin = (req, res) => {
         },
         onFailure: function (err) {
             console.log(err.message || JSON.stringify(err));
-            res.send(err.message || JSON.stringify(err));
+            res.send(err.message || JSON.stringify(err)).end();
         },
         customChallenge: function (loginDetails) {
             var challengeResponses = 'challenge-answer';
@@ -311,7 +311,7 @@ const childrenSelect = (req, res) => {
                 res.json({ message: "error" });
             }
             else {
-                res.json({ message: "success", result });
+                res.json({ message: "success", result }).end();
             }
         });
     }
@@ -329,7 +329,7 @@ const createChild = (req, res) => {
                 res.json({ message: "error" });
             }
             else {
-                res.json({ message: "success", result });
+                res.json({ message: "success", result }).end();
             }
         });
     }
