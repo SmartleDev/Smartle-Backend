@@ -16,12 +16,12 @@ let dbconnection = mysql2_1.default.createPool({
     connectionLimit: 20,
     queueLimit: 0,
 });
-dbconnection.on('connection', function (connection) {
+dbconnection.on('connection', (connection) => {
     console.log('DB Connection established');
-    connection.on('error', function (err) {
+    connection.on('error', (err) => {
         console.error(new Date(), 'MySQL error', err.code);
     });
-    connection.on('close', function (err) {
+    connection.on('close', (err) => {
         console.error(new Date(), 'MySQL close', err);
     });
 });

@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -7,6 +16,7 @@ exports.CourseInvoice = exports.registerIntrest = exports.contactUs = exports.en
 const config_1 = __importDefault(require("../config/config"));
 const aws_sdk_1 = __importDefault(require("aws-sdk"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const promisePool = config_1.default.promise();
 dotenv_1.default.config();
 const ses = new aws_sdk_1.default.SES({
     apiVersion: '2022-05-09',
@@ -75,23 +85,19 @@ const accountCreationEmailService = (req, res) => {
     });
 };
 exports.accountCreationEmailService = accountCreationEmailService;
-const addLearnerEmailService = (req, res) => {
+const addLearnerEmailService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { emailTo, parentId } = req.body;
     let studenDetails;
     let body;
     const subject = `Smartle cares about your child’s privacy`;
     try {
-        config_1.default.query(`SELECT * FROM student WHERE parent_id = ?`, [parentId], (err, result) => {
-            if (err) {
-                console.log(err);
-                res.send({ message: 'error' });
-            }
-            else if ((result === null || result === void 0 ? void 0 : result.length) === 1) {
-                studenDetails = {
-                    student: result[(result === null || result === void 0 ? void 0 : result.length) - 1],
-                    number_of_students: result.length,
-                };
-                body = ` <div style="width:80%; margin:auto">
+        const [rows] = yield promisePool.query(`SELECT * FROM student WHERE parent_id = ?`, [parentId]);
+        if ((rows === null || rows === void 0 ? void 0 : rows.length) === 1) {
+            studenDetails = {
+                student: rows[(rows === null || rows === void 0 ? void 0 : rows.length) - 1],
+                number_of_students: rows.length,
+            };
+            body = ` <div style="width:80%; margin:auto">
            <div style="text-align:center; border-bottom-left-radius:40px;
            border-bottom-right-radius:40px;background: linear-gradient(245.75deg, #FFEBF8 -2.86%, #EAE1FF 103.21%)">
                <div ><img src="https://smartle-video-content.s3.amazonaws.com/smartle-logo/smartlelogo1.png" width="150px" style="text-align:center;margin:auto; justify-content:'center"/></div>
@@ -108,52 +114,47 @@ const addLearnerEmailService = (req, res) => {
      
            </div>
        </div>`;
-                emailService(emailTo, body, subject)
-                    .then((val) => {
-                    console.log(val);
-                    res.send('Email Sent Sucessfully');
-                })
-                    .catch((err) => {
-                    res.send('Error' + err);
-                });
-            }
-            else {
-                res.send('Congratualtions');
-            }
-        });
+            emailService(emailTo, body, subject)
+                .then((val) => {
+                console.log(val);
+                res.send('Email Sent Sucessfully');
+            })
+                .catch((err) => {
+                res.send('Error' + err);
+            });
+        }
+        else {
+            res.send('Congratualtions');
+        }
     }
     catch (error) {
         res.status(404).json({ message: 'Error' });
     }
-};
+});
 exports.addLearnerEmailService = addLearnerEmailService;
-const enrollCourseEmailService = (req, res) => {
+const enrollCourseEmailService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
     const { emailTo, studentName, courseId } = req.body;
     let courseDetails;
     let body;
     let subject;
     try {
-        config_1.default.query(`SELECT * FROM course WHERE course_id = ?`, [courseId], (err, result) => {
-            var _a, _b, _c;
-            if (err) {
-                console.log(err);
-                res.send({ message: 'error' });
-            }
-            else {
-                courseDetails = result;
-                subject = `Congratulations, ${studentName
-                    .split(' ')
-                    .slice(0, 1)
-                    .join(' ')}. You are enrolled in ${(_a = courseDetails[0]) === null || _a === void 0 ? void 0 : _a.course_name}`;
-                body = `<div style="width:80%; margin:auto">
+        const [result] = yield promisePool.query(`SELECT * FROM course WHERE course_id = ?`, [courseId]);
+        if (result.length !== 0) {
+            courseDetails = result;
+            subject = `Congratulations, ${studentName
+                .split(' ')
+                .slice(0, 1)
+                .join(' ')}. You are enrolled in ${(_a = courseDetails[0]) === null || _a === void 0 ? void 0 : _a.course_name}`;
+            body = `<div style="width:80%; margin:auto">
           <div style=" border-bottom-left-radius:40px;
           border-bottom-right-radius:40px;background: linear-gradient(245.75deg, #FFEBF8 -2.86%, #EAE1FF 103.21%)">
               <div style="margin-left:20px; padding-top:30px"><img src="https://smartle-video-content.s3.amazonaws.com/smartle-logo/smartleblacklogo.png" width="150px" /></div>
               <div> 
                          <p style="color:#917EBD; font-size:20px; font-weight:900;margin-left:20px;margin-top:20px;">Congratulations ${studentName
-                    .split(' ')
-                    .slice(0, 1)
-                    .join(' ')} !!</p>
+                .split(' ')
+                .slice(0, 1)
+                .join(' ')} !!</p>
                   <p style="font-size:16px; font-weight:500;margin-left:20px;padding-bottom:20px; color:black ">You are enrolled in ${(_b = courseDetails[0]) === null || _b === void 0 ? void 0 : _b.course_name}</p>
        
               </div>
@@ -167,58 +168,53 @@ const enrollCourseEmailService = (req, res) => {
           <div style="margin-top:50px; text-align:center"><a href='www.dev.smartle.co' target="_blank" style="color:white; font-size: 18px;font-weight:800; text-decoration:none;text-align:center;margin:auto;padding:5px 30px 5px 30px;color:white;background: #917EBD;box-shadow:0px 8px 20px rgba(0, 0, 0, 0.1);border-radius: 10px">Begin Learning</a></div>
           </div>
       </div>`;
-            }
-            emailService(emailTo, body, subject)
-                .then((val) => {
-                console.log(val);
-                res.send('Email Sent Sucessfully');
-            })
-                .catch((err) => {
-                res.send('Error' + err);
-            });
+        }
+        emailService(emailTo, body, subject)
+            .then((val) => {
+            console.log(val);
+            res.send('Email Sent Sucessfully');
+        })
+            .catch((err) => {
+            res.send('Error' + err);
         });
     }
     catch (error) {
         res.status(404).json({ message: 'Error' });
     }
-};
+});
 exports.enrollCourseEmailService = enrollCourseEmailService;
-const enrollTrialCourseEmailService = (req, res) => {
+const enrollTrialCourseEmailService = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _d, _e, _f;
     console.log(req.body);
     const { emailTo, studentName, courseId } = req.body;
     let courseDetails;
     let body;
     let subject;
     try {
-        config_1.default.query(`SELECT * FROM course WHERE course_id = ?`, [courseId], (err, result) => {
-            var _a, _b, _c;
-            if (err) {
-                console.log(err);
-                res.send({ message: 'error' });
-            }
-            else {
-                courseDetails = result;
-                subject = `Congratulations, ${studentName
-                    .split(' ')
-                    .slice(0, 1)
-                    .join(' ')}. You are enrolled in Trial for ${(_a = courseDetails[0]) === null || _a === void 0 ? void 0 : _a.course_name}`;
-                body = `      <div style="width:80%; margin:auto">
+        const [result] = yield promisePool.query(`SELECT * FROM course WHERE course_id = ?`, [courseId]);
+        if (result.length !== 0) {
+            courseDetails = result;
+            subject = `Congratulations, ${studentName
+                .split(' ')
+                .slice(0, 1)
+                .join(' ')}. You are enrolled in Trial for ${(_d = courseDetails[0]) === null || _d === void 0 ? void 0 : _d.course_name}`;
+            body = `      <div style="width:80%; margin:auto">
            <div style=" border-bottom-left-radius:40px;
            border-bottom-right-radius:40px;background: linear-gradient(245.75deg, #FFEBF8 -2.86%, #EAE1FF 103.21%)">
                <div style="margin-left:20px; padding-top:30px"><img src="https://smartle-video-content.s3.amazonaws.com/smartle-logo/smartleblacklogo.png" width="150px" /></div>
                <div> 
                           <p style="color:#917EBD; font-size:20px; font-weight:900;margin-left:20px;margin-top:20px;">Congratulations ${studentName
-                    .split(' ')
-                    .slice(0, 1)
-                    .join(' ')} !!</p>
+                .split(' ')
+                .slice(0, 1)
+                .join(' ')} !!</p>
  
-                   <p style="font-size:16px; font-weight:500;margin-left:20px;padding-bottom:20px; color:black ">Welcome to ${(_b = courseDetails[0]) === null || _b === void 0 ? void 0 : _b.course_name} Trial Course</p>
+                   <p style="font-size:16px; font-weight:500;margin-left:20px;padding-bottom:20px; color:black ">Welcome to ${(_e = courseDetails[0]) === null || _e === void 0 ? void 0 : _e.course_name} Trial Course</p>
  
                </div>
            </div>
            <div style="width:90%; margin:auto">
  
-           <p style="margin-top:10px; font-size:16px">You’re enrolled in ${(_c = courseDetails[0]) === null || _c === void 0 ? void 0 : _c.course_name} trial course<br><br>
+           <p style="margin-top:10px; font-size:16px">You’re enrolled in ${(_f = courseDetails[0]) === null || _f === void 0 ? void 0 : _f.course_name} trial course<br><br>
    
  We are excited you've decided to pursue your learning journey with us. We are excited to have you in our midst. Head on over to your course and start your learning streak now!
    
@@ -228,29 +224,24 @@ const enrollTrialCourseEmailService = (req, res) => {
            </div>
   
        </div>`;
-            }
-            emailService(emailTo, body, subject)
-                .then((val) => {
-                console.log(val);
-                res.send('Email Sent Sucessfully');
-            })
-                .catch((err) => {
-                res.send('Error' + err);
-            });
+        }
+        emailService(emailTo, body, subject)
+            .then((val) => {
+            console.log(val);
+            res.send('Email Sent Sucessfully');
+        })
+            .catch((err) => {
+            res.send('Error' + err);
         });
     }
     catch (error) {
         res.status(404).json({ message: 'Error' });
     }
-};
+});
 exports.enrollTrialCourseEmailService = enrollTrialCourseEmailService;
-const contactUs = (req, res) => {
+const contactUs = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, email, contactno, message, contacting_as } = req.body;
-    config_1.default.query(`INSERT INTO smartle.contactus (name, email, contactno, message, contacting_as) VALUES(?,?,?,?,?)`, [name, email, contactno, message, contacting_as], (err, result) => {
-        if (err) {
-            console.log(err);
-        }
-    });
+    const [result] = yield promisePool.query(`INSERT INTO smartle.contactus (name, email, contactno, message, contacting_as) VALUES(?,?,?,?,?)`, [name, email, contactno, message, contacting_as]);
     const subject = `User Contacted Smartle:`;
     const body = `
 
@@ -269,19 +260,15 @@ const contactUs = (req, res) => {
         .catch((err) => {
         res.send('Error' + err);
     });
-};
+});
 exports.contactUs = contactUs;
-const registerIntrest = (req, res) => {
+const registerIntrest = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { course_name, course_type, course_age, user_email, course_id } = req.body;
     var today = new Date();
     var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
     var time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds();
     var dateTime = date + ' ' + time;
-    config_1.default.query(`INSERT INTO smartle.registred_interest (course_name,  course_type, course_age, user_email, course_id, date_and_time) VALUES(?,?,?,?,?,?)`, [course_name, course_type, course_age, user_email, course_id, dateTime], (err, result) => {
-        if (err) {
-            console.log(err);
-        }
-    });
+    const [rows] = yield promisePool.query(`INSERT INTO smartle.registred_interest (course_name,  course_type, course_age, user_email, course_id, date_and_time) VALUES(?,?,?,?,?,?)`, [course_name, course_type, course_age, user_email, course_id, dateTime]);
     const subject = `Course Interest Smartle:`;
     const body = `
 
@@ -300,27 +287,22 @@ const registerIntrest = (req, res) => {
         .catch((err) => {
         res.send('Error' + err);
     });
-};
+});
 exports.registerIntrest = registerIntrest;
-const CourseInvoice = (req, res) => {
+const CourseInvoice = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { emailTo, courseId } = req.body;
     let invoiceDetails;
     let body;
     let subject;
     try {
-        config_1.default.query(`SELECT *
+        const [result] = yield promisePool.query(`SELECT *
       FROM payment
       ORDER BY payment_id DESC
-      LIMIT 1`, [], (err, result) => {
-            if (err) {
-                console.log(err);
-                res.send({ message: 'error' });
-            }
-            else {
-                invoiceDetails = result[0];
-                console.log(result);
-                subject = `Payment Invoce Smartle.Co`;
-                body = `
+      LIMIT 1`, []);
+        invoiceDetails = result[0];
+        console.log(result);
+        subject = `Payment Invoce Smartle.Co`;
+        body = `
           <head>
           <meta charset="UTF-8" />
           <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -451,19 +433,17 @@ const CourseInvoice = (req, res) => {
           </div>
         </body>
   `;
-            }
-            emailService(emailTo, body, subject)
-                .then((val) => {
-                console.log(val);
-                res.send('Email Sent Sucessfully');
-            })
-                .catch((err) => {
-                res.send('Error' + err);
-            });
+        emailService(emailTo, body, subject)
+            .then((val) => {
+            console.log(val);
+            res.send('Email Sent Sucessfully');
+        })
+            .catch((err) => {
+            res.send('Error' + err);
         });
     }
     catch (error) {
         res.status(404).json({ message: 'Error' });
     }
-};
+});
 exports.CourseInvoice = CourseInvoice;

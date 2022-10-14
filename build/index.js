@@ -16,6 +16,15 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const config_1 = __importDefault(require("./config/config"));
+const studentRoutes_1 = __importDefault(require("./routes/studentRoutes"));
+const coursesRoutes_1 = __importDefault(require("./routes/coursesRoutes"));
+const parentRoutes_1 = __importDefault(require("./routes/parentRoutes"));
+const enrollmentRoutes_1 = __importDefault(require("./routes/enrollmentRoutes"));
+const emailServiceRoutes_1 = __importDefault(require("./routes/emailServiceRoutes"));
+const voucherRoutes_1 = __importDefault(require("./routes/voucherRoutes"));
+const homeRoutes_1 = __importDefault(require("./routes/homeRoutes"));
+const enterpriseRoutes_1 = __importDefault(require("./routes/enterpriseRoutes"));
+const paymentGatewayRoutes_1 = __importDefault(require("./routes/paymentGatewayRoutes"));
 const app = (0, express_1.default)();
 dotenv_1.default.config({ path: './.env' });
 app.use(express_1.default.json({ limit: '30mb' }));
@@ -29,26 +38,20 @@ app.use((0, cors_1.default)());
 //   }
 // })
 // app.use(MainRouters)
-// app.use('/', studentRouter);
-// app.use('/', coursesRouter);
-// app.use('/', parentRouter);
+app.use('/', studentRoutes_1.default);
+app.use('/', coursesRoutes_1.default);
+app.use('/', parentRoutes_1.default);
 // app.use('/', authRoutes);
-// app.use('/', enrollmentRoutes);
+app.use('/', enrollmentRoutes_1.default);
 // app.use('/', courseProgressRoutes);
-// app.use('/', emailServiceRoutes);
-// app.use('/', voucherRoutes);
-// app.use('/', homeRoutes);
-// app.use('/', enterpriseRoutes);
-// app.use('/', paymentRoutes);
+app.use('/', emailServiceRoutes_1.default);
+app.use('/', voucherRoutes_1.default);
+app.use('/', homeRoutes_1.default);
+app.use('/', enterpriseRoutes_1.default);
+app.use('/', paymentGatewayRoutes_1.default);
 const promisePool = config_1.default.promise();
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const [rows] = yield promisePool.query('SELECT * FROM course_general');
-        return res.send(rows);
-    }
-    catch (sqlError) {
-        yield console.log(sqlError);
-    }
+    res.send({ message: 'Smartle Backend' });
 }));
 app.listen(process.env.PORT || 8000, () => {
     console.log('Server Running!');
