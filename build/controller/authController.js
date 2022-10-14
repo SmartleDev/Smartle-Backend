@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -12,20 +21,21 @@ const request_1 = __importDefault(require("request"));
 const amazon_cognito_identity_js_1 = require("amazon-cognito-identity-js");
 const poolData = {
     UserPoolId: 'ap-south-1_aFlE9qxGz',
-    ClientId: '7trqouonoof0uidoq1psmqbohh'
+    ClientId: '7trqouonoof0uidoq1psmqbohh',
 };
+const promisePool = config_1.default.promise();
 const userPool = new amazon_cognito_identity_js_1.CognitoUserPool(poolData);
-exports.signUp = ((req, res) => {
+const signUp = (req, res) => {
     const { email, name, password } = req.body;
     console.log(req.body);
     let attributeList = [];
     const emailData = {
         Name: 'email',
-        Value: email
+        Value: email,
     };
     const nameData = {
         Name: 'name',
-        Value: name
+        Value: name,
     };
     const emailAttributes = new amazon_cognito_identity_js_1.CognitoUserAttribute(emailData);
     const nameAttributes = new amazon_cognito_identity_js_1.CognitoUserAttribute(nameData);
@@ -40,7 +50,8 @@ exports.signUp = ((req, res) => {
         res.send(result.user).end();
         var cognitoUser = result.user;
     });
-});
+};
+exports.signUp = signUp;
 const confrimCode = (req, res) => {
     const { email, code } = req.body;
     let userData = {
@@ -63,7 +74,7 @@ const login = (req, res) => {
     const { email, password } = req.body;
     const loginDetails = {
         Username: email,
-        Password: password
+        Password: password,
     };
     const authenticationDetails = new amazon_cognito_identity_js_1.AuthenticationDetails(loginDetails);
     const userDetails = {
@@ -72,20 +83,20 @@ const login = (req, res) => {
     };
     const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
     cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess: result => {
+        onSuccess: (result) => {
             res.send({
                 token: result.getIdToken().getJwtToken(),
                 accessToken: result.getAccessToken().getJwtToken(),
                 username: result.getAccessToken().payload.username,
                 name: result.getIdToken().payload.name,
-                email: result.getIdToken().payload.email
+                email: result.getIdToken().payload.email,
             });
             //  db.query('INSERT INTO parent (parent_id, parent_name, parent_email) VALUES(?,?,?)', [result.getAccessToken().payload.username, result.getIdToken().payload.name, result.getIdToken().payload.email],
             //  (err, result) => {
             //     if(err){
             // 	console.log(err);
             //  	}
-            //  }) 
+            //  })
         },
         onFailure: function (err) {
             console.log(err.message || JSON.stringify(err));
@@ -95,7 +106,7 @@ const login = (req, res) => {
 };
 exports.login = login;
 const verifyToken = (req, res) => {
-    const userPoolId = poolData.UserPoolId; // Cognito user pool id here    
+    const userPoolId = poolData.UserPoolId; // Cognito user pool id here
     const pool_region = 'ap-south-1'; // Region where your cognito user pool is created
     const { token } = req.body;
     let pem;
@@ -103,7 +114,7 @@ const verifyToken = (req, res) => {
     console.log('Validating the token...');
     (0, request_1.default)({
         url: `https://cognito-idp.${pool_region}.amazonaws.com/${userPoolId}/.well-known/jwks.json`,
-        json: true
+        json: true,
     }, (error, request, body) => {
         console.log('validation token..');
         if (!error && request.statusCode === 200) {
@@ -122,7 +133,7 @@ const verifyToken = (req, res) => {
             //validate the token
             var decodedJwt = jsonwebtoken_1.default.decode(token, { complete: true });
             if (!decodedJwt) {
-                res.send("Not a valid JWT token").end();
+                res.send('Not a valid JWT token').end();
                 return;
             }
             var kid = decodedJwt.header.kid;
@@ -133,30 +144,31 @@ const verifyToken = (req, res) => {
             }
             jsonwebtoken_1.default.verify(token, pem, function (err, payload) {
                 if (err) {
-                    res.send("Invalid Token.");
+                    res.send('Invalid Token.');
                 }
                 else {
-                    console.log("Valid Token.");
+                    console.log('Valid Token.');
                     res.send(payload);
                 }
             });
         }
         else {
             console.log(error);
-            console.log("Error! Unable to download JWKs");
+            console.log('Error! Unable to download JWKs');
         }
     });
 };
 exports.verifyToken = verifyToken;
-const loginParentDataInput = (req, res) => {
+const loginParentDataInput = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { parentId, parentName, parentEmail } = req.body;
-    config_1.default.query('INSERT INTO parent (parent_id, parent_name, parent_email) VALUES(?,?,?)', [parentId, parentName, parentEmail], (err, result) => {
-        if (err) {
-            console.log(err);
-        }
+    try {
+        const [result] = yield promisePool.query('INSERT INTO parent (parent_id, parent_name, parent_email) VALUES(?,?,?)', [parentId, parentName, parentEmail]);
         res.send(result).end();
-    });
-};
+    }
+    catch (sqlError) {
+        console.log(sqlError);
+    }
+});
 exports.loginParentDataInput = loginParentDataInput;
 const getAllUsers = (req, res) => {
     const { email } = req.body;
@@ -227,19 +239,17 @@ const logout = (req, res) => {
     cognitoUser.signOut();
 };
 exports.logout = logout;
-const forgotPassword = (req, res) => {
+const forgotPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let { email } = req.body;
     const userDetails = {
         Username: email,
         Pool: userPool,
     };
     const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
-    config_1.default.query('SELECT * FROM smartle.parent WHERE parent_email = ?;', [email], (err, rows) => {
-        if (err) {
-            console.log(err);
-        }
+    try {
+        const [rows] = yield promisePool.query('SELECT * FROM smartle.parent WHERE parent_email = ?;', [email]);
         if ((rows === null || rows === void 0 ? void 0 : rows.length) === 0) {
-            res.send("Enter Email is not Registed Please Try with Another Email");
+            res.send('Enter Email is not Registed Please Try with Another Email');
         }
         else {
             cognitoUser.forgotPassword({
@@ -252,8 +262,11 @@ const forgotPassword = (req, res) => {
                 },
             });
         }
-    });
-};
+    }
+    catch (sqlError) {
+        console.log(sqlError);
+    }
+});
 exports.forgotPassword = forgotPassword;
 const forgotPasswordNext = (req, res) => {
     let { email, verificationCode, newPassword } = req.body;
@@ -268,7 +281,7 @@ const forgotPasswordNext = (req, res) => {
         },
         onFailure(err) {
             res.send(err).end();
-        }
+        },
     });
 };
 exports.forgotPasswordNext = forgotPasswordNext;
@@ -285,10 +298,10 @@ const passwordLessLogin = (req, res) => {
     const cognitoUser = new amazon_cognito_identity_js_1.CognitoUser(userDetails);
     cognitoUser.setAuthenticationFlowType('CUSTOM_AUTH');
     cognitoUser.initiateAuth(authenticationDetails, {
-        onSuccess: result => {
+        onSuccess: (result) => {
             res.send({
                 token: result.getIdToken().getJwtToken(),
-                accessToken: result.getAccessToken().getJwtToken()
+                accessToken: result.getAccessToken().getJwtToken(),
             });
         },
         onFailure: function (err) {
@@ -302,39 +315,25 @@ const passwordLessLogin = (req, res) => {
     });
 };
 exports.passwordLessLogin = passwordLessLogin;
-const childrenSelect = (req, res) => {
+const childrenSelect = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId } = req.body;
     try {
-        config_1.default.query(`SELECT * FROM student WHERE parent_id = ?`, [userId], (err, result) => {
-            if (err) {
-                console.log(err);
-                res.json({ message: "error" });
-            }
-            else {
-                res.json({ message: "success", result }).end();
-            }
-        });
+        const [result] = yield promisePool.query(`SELECT * FROM student WHERE parent_id = ?`, [userId]);
+        res.json({ message: 'success', result }).end();
     }
     catch (error) {
         res.status(404).json({ message: 'Error' });
     }
-};
+});
 exports.childrenSelect = childrenSelect;
-const createChild = (req, res) => {
+const createChild = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { studentName, studentGender, studentAge, parentId } = req.body;
     try {
-        config_1.default.query('INSERT INTO student (student_name, student_gender, student_age, parent_id) VALUES(?,?,?,?)', [studentName, studentGender, studentAge, parentId, studentGender], (err, result) => {
-            if (err) {
-                console.log(err);
-                res.json({ message: "error" });
-            }
-            else {
-                res.json({ message: "success", result }).end();
-            }
-        });
+        const [result] = yield promisePool.query('INSERT INTO student (student_name, student_gender, student_age, parent_id) VALUES(?,?,?,?)', [studentName, studentGender, studentAge, parentId, studentGender]);
+        res.json({ message: 'success', result }).end();
     }
     catch (error) {
         res.status(404).json({ message: 'Error' });
     }
-};
+});
 exports.createChild = createChild;
