@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const enrollmentController_1 = require("../controller/enrollmentController");
 const router = express_1.default.Router();
 router.post("/enrolledcourses", enrollmentController_1.getLearnerCourses);
+router.post("/certificates", enrollmentController_1.getCertificatesOfStudent);
 router.post("/getEnrolledCourseView", enrollmentController_1.getEnrolledCourseView);
 router.post("/getinstructorlist", enrollmentController_1.getInstructorList);
 router.get("/getInstructorDetails/:id", enrollmentController_1.getInstructorDetails);
