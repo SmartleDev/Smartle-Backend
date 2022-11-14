@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getKeyEvents = exports.getTopicContent = exports.updateSessionAvaliablity = exports.convertTrialToBuyCourse = exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getCertificatesOfStudent = exports.getLearnerCourses = void 0;
+exports.getKeyEvents = exports.getTopicContent = exports.updateSessionAvaliablity = exports.convertTrialToBuyCourse = exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getCertificatesOfStudent = exports.getEnrollmentStatus = exports.getLearnerCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 const promisePool = config_1.default.promise();
 const getLearnerCourses = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -27,6 +27,18 @@ const getLearnerCourses = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.getLearnerCourses = getLearnerCourses;
+const getEnrollmentStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let { studentId, courseId, courseType } = req.body;
+    let sql = `SELECT * FROM smartle.enrollment INNER JOIN course ON course.course_id = enrollment.course_id WHERE enrollment.student_id = ${studentId} AND enrollment.course_id = ${courseId} AND course_type = "${courseType}"`;
+    try {
+        const [rows] = yield promisePool.query(sql);
+        res.send(rows);
+    }
+    catch (sqlError) {
+        console.log(sqlError);
+    }
+});
+exports.getEnrollmentStatus = getEnrollmentStatus;
 const getCertificatesOfStudent = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let { studentId } = req.body;
     let sql = `SELECT * FROM smartle.enrollment INNER JOIN course ON course.course_id = enrollment.course_id WHERE student_id = ${studentId} AND course_progress = 100`;
