@@ -3,9 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.courseProgressTopic = exports.getAllTopicsCompleted = exports.updateTopicsCompleted = exports.enrolledUserProgressDefault = exports.updateModuleCompeletedStatus = exports.updateModuleStatus = exports.updateTopicStatus = exports.getTrackedCourse = exports.getProgressModuleTopic = exports.getProgressCourseModule = void 0;
+exports.courseModulesDone = exports.courseModulesRemaining = exports.courseProgressTopic = exports.getAllTopicsCompleted = exports.updateTopicsCompleted = exports.enrolledUserProgressDefault = exports.updateModuleCompeletedStatus = exports.updateModuleStatus = exports.updateTopicStatus = exports.getTrackedCourse = exports.getProgressModuleTopic = exports.getProgressCourseModule = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getProgressCourseModule = ((req, res) => {
+    console.log(req);
     const courseId = req.params.id;
     config_1.default.query('SELECT module_id FROM smartle.coursemodule WHERE course_id = ?;', [courseId], (err, rows) => {
         if (err) {
@@ -161,5 +162,57 @@ exports.courseProgressTopic = ((req, res) => {
             }
         });
         res.send({ result: "Success" });
+    });
+});
+exports.courseModulesRemaining = ((req, res) => {
+    const { courseId, enrollmentId } = req.body;
+    let totalModules = [];
+    let completedModules;
+    let activeModules = [];
+    config_1.default.query('SELECT module_id FROM smartle.coursemodule WHERE course_id = ?;', [courseId], (err, rows) => {
+        if (err) {
+            console.log(err);
+        }
+        totalModules = rows === null || rows === void 0 ? void 0 : rows.map((dataItem) => dataItem === null || dataItem === void 0 ? void 0 : dataItem.module_id);
+        config_1.default.query('SELECT course_modules_completed FROM smartle.course_progress WHERE enrollment_id = ?;', [enrollmentId], (err, rows1) => {
+            var _a;
+            if (err) {
+                console.log(err);
+            }
+            completedModules = (_a = rows1[0]) === null || _a === void 0 ? void 0 : _a.course_modules_completed;
+            activeModules = totalModules === null || totalModules === void 0 ? void 0 : totalModules.filter(val => !completedModules.includes(val));
+            config_1.default.query(`SELECT * FROM module JOIN coursemodule ON module.module_id = coursemodule.module_id AND coursemodule.course_id=?`, [courseId], (err, rows2) => {
+                if (err) {
+                    console.log(err);
+                }
+                let finalArray = activeModules.map((dataID) => {
+                    let individualVal = rows2.filter((dataItem) => dataItem.module_id === dataID);
+                    return individualVal[0];
+                });
+                res.send(finalArray);
+            });
+        });
+    });
+});
+exports.courseModulesDone = ((req, res) => {
+    const { courseId, enrollmentId } = req.body;
+    let completedModules;
+    config_1.default.query('SELECT course_modules_completed FROM smartle.course_progress WHERE enrollment_id = ?;', [enrollmentId], (err, rows) => {
+        var _a;
+        if (err) {
+            console.log(err);
+        }
+        completedModules = (_a = rows[0]) === null || _a === void 0 ? void 0 : _a.course_modules_completed;
+        config_1.default.query(`SELECT * FROM module JOIN coursemodule ON module.module_id = coursemodule.module_id AND coursemodule.course_id=?`, [courseId], (err, rows2) => {
+            if (err) {
+                console.log(err);
+            }
+            let finalArray = completedModules.map((dataID) => {
+                let individualVal = rows2.filter((dataItem) => dataItem.module_id === dataID);
+                return individualVal[0];
+            });
+            res.send(finalArray);
+        });
+        // res.send(rows);
     });
 });
