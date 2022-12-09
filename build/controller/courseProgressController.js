@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.courseModulesDone = exports.courseModulesRemaining = exports.courseProgressTopic = exports.getAllTopicsCompleted = exports.updateTopicsCompleted = exports.enrolledUserProgressDefault = exports.updateModuleCompeletedStatus = exports.updateModuleStatus = exports.updateTopicStatus = exports.getTrackedCourse = exports.getProgressModuleTopic = exports.getProgressCourseModule = void 0;
+exports.updateModuleCompeletedArray = exports.courseModulesDone = exports.courseModulesRemaining = exports.courseProgressTopic = exports.getAllTopicsCompleted = exports.updateTopicsCompleted = exports.enrolledUserProgressDefault = exports.updateModuleCompeletedStatus = exports.updateModuleStatus = exports.updateTopicStatus = exports.getTrackedCourse = exports.getProgressModuleTopic = exports.getProgressCourseModule = void 0;
 const config_1 = __importDefault(require("../config/config"));
 exports.getProgressCourseModule = ((req, res) => {
     console.log(req);
@@ -213,6 +213,21 @@ exports.courseModulesDone = ((req, res) => {
             });
             res.send(finalArray);
         });
-        // res.send(rows);
+    });
+});
+exports.updateModuleCompeletedArray = ((req, res) => {
+    const { moduleIDCompleted, enrollmentId } = req.body;
+    config_1.default.query('SELECT course_modules_completed FROM course_progress WHERE enrollment_id = ?', [enrollmentId], (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        const val = result === null || result === void 0 ? void 0 : result.map((dataItem) => dataItem === null || dataItem === void 0 ? void 0 : dataItem.course_modules_completed);
+        val[0].push(moduleIDCompleted);
+        config_1.default.query(`UPDATE smartle.course_progress SET course_modules_completed = '[${val[0]}]' WHERE enrollment_id = ${enrollmentId}`, (err, result) => {
+            if (err) {
+                console.log(err);
+            }
+            res.send({ result: "success" });
+        });
     });
 });
