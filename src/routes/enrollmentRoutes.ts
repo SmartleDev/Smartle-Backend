@@ -1,4 +1,4 @@
-import express from "express";
+import express from 'express';
 import {
   getLearnerCourses,
   getEnrolledCourseView,
@@ -11,22 +11,26 @@ import {
   convertTrialToBuyCourse,
   updateSessionAvaliablity,
   getTopicContent,
-  getKeyEvents
-} from "../controller/enrollmentController";
+  getKeyEvents,
+  getCertificatesOfStudent,
+  getEnrollmentStatus,
+} from '../controller/enrollmentController';
 
 const router = express.Router();
 
-router.post("/enrolledcourses", getLearnerCourses);
-router.post("/getEnrolledCourseView", getEnrolledCourseView);
-router.post("/getinstructorlist", getInstructorList);
-router.get("/getInstructorDetails/:id", getInstructorDetails);
-router.post("/getsessionview", getSessionView);
-router.post("/enrollLearner", enrollLearner);
-router.post("/getenrolledsessiondetails", getEnrolledSessionDetails);
-router.post("/verifyUserEnrollment", verifyUserEnrollment);
-router.post("/convertTrialToBuyCourse", convertTrialToBuyCourse);
-router.post("/updateSessionAvaliablity", updateSessionAvaliablity);
-router.get("/getTopicContent/:id", getTopicContent);
-router.post("/getKeyEvents/", getKeyEvents);
+router.post('/enrolledcourses', getLearnerCourses);
+router.post('/certificates', getCertificatesOfStudent);
+router.post('/getEnrolledCourseView', getEnrolledCourseView);
+router.post('/getinstructorlist', getInstructorList);
+router.get('/getInstructorDetails/:id', getInstructorDetails);
+router.post('/getsessionview', getSessionView);
+router.post('/enrollLearner', enrollLearner);
+router.post('/getenrolledsessiondetails', getEnrolledSessionDetails);
+router.post('/verifyUserEnrollment', verifyUserEnrollment);
+router.post('/convertTrialToBuyCourse', convertTrialToBuyCourse);
+router.post('/updateSessionAvaliablity', updateSessionAvaliablity);
+router.get('/getTopicContent/:id', getTopicContent);
+router.post('/getKeyEvents/', getKeyEvents);
+router.post('/enrollmentStatus', getEnrollmentStatus);
 
 export default router;

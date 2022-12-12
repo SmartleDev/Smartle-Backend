@@ -3,6 +3,7 @@ import express, {Request, Response} from 'express';
 import db from '../config/config';
 
 export const getProgressCourseModule = ((req: Request, res: Response) => {
+    console.log(req)
 		const courseId = req.params.id
         db.query('SELECT module_id FROM smartle.coursemodule WHERE course_id = ?;',[courseId], (err: any, rows: any) =>{
             if(err){
@@ -188,6 +189,81 @@ export const courseProgressTopic = ((req: Request, res: Response) => {
 
 });
 
+export const courseModulesRemaining  = ((req: Request, res: Response) => {
+    const {courseId, enrollmentId} = req.body
+    let totalModules: any[] = [];
+    let completedModules: any[];
+    let activeModules: any[] = []
+    db.query('SELECT module_id FROM smartle.coursemodule WHERE course_id = ?;',[courseId], (err: any, rows: any) =>{
+        if(err){
+            console.log(err);
+        }
+        totalModules =	rows?.map((dataItem : any)=> dataItem?.module_id)
+        db.query('SELECT course_modules_completed FROM smartle.course_progress WHERE enrollment_id = ?;',[enrollmentId], (err: any, rows1: any) =>{
+            if(err){
+                console.log(err);
+            }
+            completedModules =	rows1[0]?.course_modules_completed;
+            activeModules = totalModules?.filter(val => !completedModules.includes(val))
+                    db.query(`SELECT * FROM module JOIN coursemodule ON module.module_id = coursemodule.module_id AND coursemodule.course_id=?`, [courseId], (err: any, rows2: any) =>{
+                         if(err){
+                        console.log(err);
+                            }
 
+                         let finalArray = activeModules.map((dataID) => {
+                             let individualVal = rows2.filter((dataItem: any) => dataItem.module_id === dataID)
+                             return individualVal[0]
+                            })
+
+                         res.send(finalArray);
+                     })
+          
+             });
+    });
+});
+
+export const courseModulesDone = ((req: Request, res: Response) => {
+    const {courseId, enrollmentId} = req.body
+    let completedModules: any[]
+    db.query('SELECT course_modules_completed FROM smartle.course_progress WHERE enrollment_id = ?;',[enrollmentId], (err: any, rows: any) =>{
+        if(err){
+            console.log(err);
+        }
+        completedModules =	rows[0]?.course_modules_completed;
+        db.query(`SELECT * FROM module JOIN coursemodule ON module.module_id = coursemodule.module_id AND coursemodule.course_id=?`, [courseId], (err: any, rows2: any) =>{
+            if(err){
+           console.log(err);
+               }
+
+            let finalArray = completedModules.map((dataID) => {
+                let individualVal = rows2.filter((dataItem: any) => dataItem.module_id === dataID)
+                return individualVal[0]
+               })
+
+            res.send(finalArray);
+        })
+    });
+
+});
+
+export const updateModuleCompeletedArray = ((req: Request, res: Response) => {
+    const {moduleIDCompleted,enrollmentId} = req.body
+    db.query('SELECT course_modules_completed FROM course_progress WHERE enrollment_id = ?',[enrollmentId], (err: any, result: any) =>{
+        if(err){
+            console.log(err);
+        }
+        const val = result?.map((dataItem:any) => dataItem?.course_modules_completed)
+        val[0].push(moduleIDCompleted);
+
+        db.query(`UPDATE smartle.course_progress SET course_modules_completed = '[${val[0]}]' WHERE enrollment_id = ${enrollmentId}`, (err: any, result: any) =>{
+            if(err){
+                console.log(err);
+            }
+            res.send({result : "success"});
+        });
+
+    });
+
+});
 
 

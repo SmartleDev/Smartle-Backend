@@ -1,16 +1,16 @@
 import mysql from 'mysql';
-import express, {Request, Response} from 'express';
+import express, { Request, Response } from 'express';
 import db from '../config/config';
 
-export const getHomeEnterpriseCourses = ((req: Request, res: Response) => {
-    
-        db.query('SELECT * from enterprise_courses WHERE enterprise = "True"', (err: any, rows: any) =>{
-            if(err){
-                console.log(err);
-            }
-            res.send(rows);
-        });
-    
-});
+const promisePool = db.promise();
 
-
+export const getHomeEnterpriseCourses = async (req: Request, res: Response) => {
+  try {
+    const [rows]: any = await promisePool.query(
+      'SELECT * from enterprise_courses WHERE enterprise = "True"'
+    );
+    res.send(rows);
+  } catch (sqlError) {
+    console.log(sqlError);
+  }
+};

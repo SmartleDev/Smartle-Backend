@@ -1,7 +1,7 @@
-import express, { Request, Response } from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import db from "./config/config"
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import db from './config/config';
 import studentRouter from './routes/studentRoutes';
 import coursesRouter from './routes/coursesRoutes';
 import parentRouter from './routes/parentRoutes';
@@ -14,20 +14,20 @@ import homeRoutes from './routes/homeRoutes';
 import enterpriseRoutes from './routes/enterpriseRoutes';
 import paymentRoutes from './routes/paymentGatewayRoutes';
 
-const app = express()
-dotenv.config({path : './.env'})
+const app = express();
+dotenv.config({ path: './.env' });
 
-app.use(express.json({limit : "30mb"}))
-app.use(express.urlencoded({limit: "30mb", extended: true}))
-app.use(cors())
+app.use(express.json({ limit: '30mb' }));
+app.use(express.urlencoded({ limit: '30mb', extended: true }));
+app.use(cors());
 
-db.connect((err : any) => {
-  if(err){
-    console.log(err);
-  } else{
-    console.log(`MYSQL Database connected`);
-  }
-})
+// db.connect((err : any) => {
+//   if(err){
+//     console.log(err);
+//   } else{
+//     console.log(`MYSQL Database connected`);
+//   }
+// })
 
 // app.use(MainRouters)
 app.use('/', studentRouter);
@@ -41,12 +41,11 @@ app.use('/', voucherRoutes);
 app.use('/', homeRoutes);
 app.use('/', enterpriseRoutes);
 app.use('/', paymentRoutes);
-
-app.get("/", (req: Request, res: Response): void => {
-  res.json({ message: "Smartle Backend" });
+const promisePool = db.promise();
+app.get('/', async (req: Request, res: Response) => {
+  res.send({ message: 'Smartle Backend' });
 });
 
-
 app.listen(process.env.PORT || 8000, (): void => {
-  console.log("Server Running!");
+  console.log('Server Running!');
 });
