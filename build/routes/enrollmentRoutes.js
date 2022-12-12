@@ -20,4 +20,5 @@ router.post('/updateSessionAvaliablity', enrollmentController_1.updateSessionAva
 router.get('/getTopicContent/:id', enrollmentController_1.getTopicContent);
 router.post('/getKeyEvents/', enrollmentController_1.getKeyEvents);
 router.post('/enrollmentStatus', enrollmentController_1.getEnrollmentStatus);
+router.post('/updateCourseProgress', enrollmentController_1.updateCourseProgress);
 exports.default = router;

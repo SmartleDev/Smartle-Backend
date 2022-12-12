@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getKeyEvents = exports.getTopicContent = exports.updateSessionAvaliablity = exports.convertTrialToBuyCourse = exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getCertificatesOfStudent = exports.getEnrollmentStatus = exports.getLearnerCourses = void 0;
+exports.updateCourseProgress = exports.getKeyEvents = exports.getTopicContent = exports.updateSessionAvaliablity = exports.convertTrialToBuyCourse = exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getCertificatesOfStudent = exports.getEnrollmentStatus = exports.getLearnerCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 const promisePool = config_1.default.promise();
 const getLearnerCourses = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -195,3 +195,23 @@ const getKeyEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getKeyEvents = getKeyEvents;
+exports.updateCourseProgress = ((req, res) => {
+    const { enrollmentId } = req.body;
+    let courseProgress;
+    config_1.default.query('SELECT * FROM smartle.course_progress WHERE enrollment_id = ? ;', [enrollmentId], (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        console.log(result[0].course_modules_completed);
+        let modulesCompleted = result[0].course_modules_completed.length;
+        let totalModules = result[0].course_total_modules;
+        courseProgress = (modulesCompleted / totalModules) * 100;
+        config_1.default.query('UPDATE smartle.enrollment SET course_progress = ? WHERE enrollment_id = ?;', [courseProgress, enrollmentId], (err, rows) => {
+            if (err) {
+                console.log(err);
+            }
+            res.send({ message: "Success" });
+            console.log(courseProgress);
+        });
+    });
+});

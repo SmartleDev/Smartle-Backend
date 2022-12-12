@@ -205,3 +205,27 @@ export const getKeyEvents = async (req: Request, res: Response) => {
     console.log(sqlError);
   }
 };
+
+export const updateCourseProgress = ((req: Request, res: Response) => {
+  const {enrollmentId} = req.body
+  let courseProgress: any;
+  db.query('SELECT * FROM smartle.course_progress WHERE enrollment_id = ? ;',[enrollmentId], (err: any, result: any) =>{
+    if(err){
+        console.log(err);
+    }
+    console.log(result[0].course_modules_completed)
+    let modulesCompleted = result[0].course_modules_completed.length
+    let totalModules = result[0].course_total_modules
+    courseProgress = (modulesCompleted/totalModules)*100
+        db.query('UPDATE smartle.enrollment SET course_progress = ? WHERE enrollment_id = ?;',[courseProgress, enrollmentId], (err: any, rows: any) =>{
+            if(err){
+                console.log(err);
+            }
+            res.send({message : "Success"})
+            console.log(courseProgress)
+        });
+});
+
+
+});
+
