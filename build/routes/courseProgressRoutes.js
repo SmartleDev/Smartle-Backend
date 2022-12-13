@@ -19,4 +19,5 @@ router.post('/courseProgressTopic', courseProgressController_1.courseProgressTop
 router.post('/courseModulesRemaining', courseProgressController_1.courseModulesRemaining);
 router.post('/courseModulesDone', courseProgressController_1.courseModulesDone);
 router.post('/updateModuleCompeletedArray', courseProgressController_1.updateModuleCompeletedArray);
+router.post('/getDoneModulesID', courseProgressController_1.getDoneModulesID);
 exports.default = router;
