@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateCourseProgress = exports.getKeyEvents = exports.getTopicContent = exports.updateSessionAvaliablity = exports.convertTrialToBuyCourse = exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getCertificatesOfStudent = exports.getEnrollmentStatus = exports.getLearnerCourses = void 0;
+exports.getKeyEvents = exports.getTopicContent = exports.updateSessionAvaliablity = exports.convertTrialToBuyCourse = exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getCertificatesOfStudent = exports.getEnrollmentStatus = exports.getLearnerCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 const promisePool = config_1.default.promise();
 const getLearnerCourses = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -101,10 +101,10 @@ const enrollLearner = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         const [rows] = yield promisePool.query(`SELECT * FROM enrollment WHERE course_id = ? AND student_id = ?`, [courseId, studentId]);
         if (rows.length === 0) {
-            const [result] = yield promisePool.query(`INSERT INTO enrollment (course_id, student_id,  course_progress, session_id, enrollment_type) VALUES(?,?,?,?,?)`, [courseId, studentId, 0, sessionId, enrollmentType]);
-            const [row] = yield promisePool.query(`SELECT enrollment_id FROM smartle.enrollment WHERE course_id = ? AND student_id = ?;`, [courseId, studentId]);
+            const [result] = yield promisePool.query(`INSERT INTO enrollment (course_id, student_id,  course_progress, enrollment_type) VALUES(?,?,?,?)`, [courseId, studentId, 0, enrollmentType]);
+            const [row2] = yield promisePool.query(`SELECT enrollment_id FROM smartle.enrollment WHERE course_id = ? AND student_id = ?;`, [courseId, studentId]);
             res.send({
-                enrolmentId: (_a = row[0]) === null || _a === void 0 ? void 0 : _a.enrollment_id,
+                enrolmentId: (_a = row2[0]) === null || _a === void 0 ? void 0 : _a.enrollment_id,
                 message: 'Congratualtions You have Booked This Course',
             });
             // res.send({message : 'Congratualtions You have Booked This Course', status : 'success'});
@@ -195,23 +195,3 @@ const getKeyEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getKeyEvents = getKeyEvents;
-exports.updateCourseProgress = ((req, res) => {
-    const { enrollmentId } = req.body;
-    let courseProgress;
-    config_1.default.query('SELECT * FROM smartle.course_progress WHERE enrollment_id = ? ;', [enrollmentId], (err, result) => {
-        if (err) {
-            console.log(err);
-        }
-        console.log(result[0].course_modules_completed);
-        let modulesCompleted = result[0].course_modules_completed.length;
-        let totalModules = result[0].course_total_modules;
-        courseProgress = (modulesCompleted / totalModules) * 100;
-        config_1.default.query('UPDATE smartle.enrollment SET course_progress = ? WHERE enrollment_id = ?;', [courseProgress, enrollmentId], (err, rows) => {
-            if (err) {
-                console.log(err);
-            }
-            res.send({ message: "Success" });
-            console.log(courseProgress);
-        });
-    });
-});
