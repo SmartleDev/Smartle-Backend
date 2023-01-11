@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateModuleCompeletedArray = exports.courseModulesDone = exports.courseModulesRemaining = exports.courseProgressTopic = exports.getAllTopicsCompleted = exports.updateTopicsCompleted = exports.enrolledUserProgressDefault = exports.updateModuleCompeletedStatus = exports.updateModuleStatus = exports.updateTopicStatus = exports.getTrackedCourse = exports.getProgressModuleTopic = exports.getProgressCourseModule = void 0;
+exports.getModuleTopicIdList = exports.getDoneModulesID = exports.updateModuleCompeletedArray = exports.courseModulesDone = exports.courseModulesRemaining = exports.courseProgressTopic = exports.getAllTopicsCompleted = exports.updateTopicsCompleted = exports.enrolledUserProgressDefault = exports.updateModuleCompeletedStatus = exports.updateModuleStatus = exports.updateTopicStatus = exports.getTrackedCourse = exports.getProgressModuleTopic = exports.getProgressCourseModule = void 0;
 const config_1 = __importDefault(require("../config/config"));
 const promisePool = config_1.default.promise();
 const getProgressCourseModule = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -281,3 +281,27 @@ const updateModuleCompeletedArray = (req, res) => __awaiter(void 0, void 0, void
     }
 });
 exports.updateModuleCompeletedArray = updateModuleCompeletedArray;
+const getDoneModulesID = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { enrollmentId } = req.body;
+    try {
+        const [rows] = yield promisePool.query('SELECT course_modules_completed FROM smartle.course_progress WHERE enrollment_id = ?', [enrollmentId]);
+        let result = rows[0].course_modules_completed;
+        res.send(result);
+    }
+    catch (sqlError) {
+        console.log(sqlError);
+    }
+});
+exports.getDoneModulesID = getDoneModulesID;
+const getModuleTopicIdList = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { moduleId } = req.body;
+    try {
+        const [rows] = yield promisePool.query('SELECT * FROM smartle.module_topic INNER JOIN topic ON module_topic.topic_id = topic.topic_id WHERE module_id = ?;', [moduleId]);
+        let result = rows.map((dataItem, index) => dataItem.topic_id);
+        res.json(result);
+    }
+    catch (sqlError) {
+        console.log(sqlError);
+    }
+});
+exports.getModuleTopicIdList = getModuleTopicIdList;
