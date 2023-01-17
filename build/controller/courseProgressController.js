@@ -16,7 +16,6 @@ exports.getModuleTopicIdList = exports.getDoneModulesID = exports.updateModuleCo
 const config_1 = __importDefault(require("../config/config"));
 const promisePool = config_1.default.promise();
 const getProgressCourseModule = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req);
     const courseId = req.params.id;
     try {
         const [rows] = yield promisePool.query('SELECT module_id FROM smartle.coursemodule WHERE course_id = ?', [courseId]);
@@ -117,9 +116,6 @@ const enrolledUserProgressDefault = (req, res) => __awaiter(void 0, void 0, void
         const valModule = rows === null || rows === void 0 ? void 0 : rows.map((dataItem) => dataItem === null || dataItem === void 0 ? void 0 : dataItem.module_id);
         moduleId = valModule[0];
         courseModuleLength = valModule === null || valModule === void 0 ? void 0 : valModule.length;
-        console.log(moduleId);
-        console.log(valModule);
-        console.log(courseModuleLength);
     }
     catch (sqlError) {
         console.log(sqlError);
@@ -129,7 +125,6 @@ const enrolledUserProgressDefault = (req, res) => __awaiter(void 0, void 0, void
             const [rows_module] = yield promisePool.query('SELECT topic_id FROM smartle.module_topic WHERE module_id = ?;', [moduleId]);
             const valTopic = rows_module === null || rows_module === void 0 ? void 0 : rows_module.map((dataItem) => dataItem === null || dataItem === void 0 ? void 0 : dataItem.topic_id);
             topicId = valTopic[0];
-            console.log(topicId);
         }
         catch (sqlError) {
             console.log(sqlError);
@@ -190,9 +185,7 @@ const courseProgressTopic = (req, res) => {
         }
         const val = result === null || result === void 0 ? void 0 : result.map((dataItem) => dataItem === null || dataItem === void 0 ? void 0 : dataItem.course_topics_completed);
         topics = val[0].length;
-        console.log(topics);
         progress = Math.ceil((0.2 / topics) * 100);
-        console.log(progress);
         config_1.default.query(`UPDATE smartle.enrollment SET course_progress = ${progress} WHERE enrollment_id = ?`, [progress, id], (err, result) => {
             if (err) {
                 console.log(err);
@@ -243,7 +236,6 @@ const courseModulesDone = (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         const [rows] = yield promisePool.query('SELECT course_modules_completed FROM smartle.course_progress WHERE enrollment_id = ?;', [enrollmentId]);
         completedModules = (_a = rows[0]) === null || _a === void 0 ? void 0 : _a.course_modules_completed;
-        console.log(completedModules);
         try {
             const [rows2] = yield promisePool.query(`SELECT * FROM module JOIN coursemodule ON module.module_id = coursemodule.module_id AND coursemodule.course_id=?`, [courseId]);
             let finalArray = completedModules.map((dataID) => {
@@ -267,13 +259,19 @@ const updateModuleCompeletedArray = (req, res) => __awaiter(void 0, void 0, void
     try {
         const [result] = yield promisePool.query('SELECT course_modules_completed FROM course_progress WHERE enrollment_id = ?', [enrollmentId]);
         val = result === null || result === void 0 ? void 0 : result.map((dataItem) => dataItem === null || dataItem === void 0 ? void 0 : dataItem.course_modules_completed);
-        val[0].push(moduleIDCompleted);
-        try {
-            const [updated] = yield promisePool.query(`UPDATE smartle.course_progress SET course_modules_completed = '[${val[0]}]' WHERE enrollment_id = ${enrollmentId}`);
-            res.send({ result: 'success' });
+        let duplicate = result === null || result === void 0 ? void 0 : result.filter((data) => data === val[0]);
+        if (duplicate.length !== 0) {
+            val[0].push(moduleIDCompleted);
+            try {
+                const [updated] = yield promisePool.query(`UPDATE smartle.course_progress SET course_modules_completed = '[${val[0]}]' WHERE enrollment_id = ${enrollmentId}`);
+                res.send({ result: 'success' });
+            }
+            catch (sqlError) {
+                console.log(sqlError);
+            }
         }
-        catch (sqlError) {
-            console.log(sqlError);
+        else {
+            res.send({ result: 'Module already compeleted' });
         }
     }
     catch (sqlError) {
