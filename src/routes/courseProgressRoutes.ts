@@ -13,6 +13,8 @@ import {
   courseModulesRemaining,
   courseModulesDone,
   updateModuleCompeletedArray,
+  getDoneModulesID,
+  getModuleTopicIdList,
 } from '../controller/courseProgressController';
 
 const router = express.Router();
@@ -30,5 +32,7 @@ router.post('/courseProgressTopic', courseProgressTopic);
 router.post('/courseModulesRemaining', courseModulesRemaining);
 router.post('/courseModulesDone', courseModulesDone);
 router.post('/updateModuleCompeletedArray', updateModuleCompeletedArray);
+router.post('/getDoneModulesID', getDoneModulesID);
+router.post('/getModuleTopicIdList', getModuleTopicIdList);
 
 export default router;

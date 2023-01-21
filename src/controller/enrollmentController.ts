@@ -98,15 +98,15 @@ export const enrollLearner = async (req: Request, res: Response) => {
 
     if (rows.length === 0) {
       const [result]: any = await promisePool.query(
-        `INSERT INTO enrollment (course_id, student_id,  course_progress, session_id, enrollment_type) VALUES(?,?,?,?,?)`,
-        [courseId, studentId, 0, sessionId, enrollmentType]
+        `INSERT INTO enrollment (course_id, student_id,  course_progress, enrollment_type) VALUES(?,?,?,?)`,
+        [courseId, studentId, 0, enrollmentType]
       );
-      const [row]: any = await promisePool.query(
+      const [row2]: any = await promisePool.query(
         `SELECT enrollment_id FROM smartle.enrollment WHERE course_id = ? AND student_id = ?;`,
         [courseId, studentId]
       );
       res.send({
-        enrolmentId: row[0]?.enrollment_id,
+        enrolmentId: row2[0]?.enrollment_id,
         message: 'Congratualtions You have Booked This Course',
       });
 
@@ -205,27 +205,3 @@ export const getKeyEvents = async (req: Request, res: Response) => {
     console.log(sqlError);
   }
 };
-
-export const updateCourseProgress = ((req: Request, res: Response) => {
-  const {enrollmentId} = req.body
-  let courseProgress: any;
-  db.query('SELECT * FROM smartle.course_progress WHERE enrollment_id = ? ;',[enrollmentId], (err: any, result: any) =>{
-    if(err){
-        console.log(err);
-    }
-    console.log(result[0].course_modules_completed)
-    let modulesCompleted = result[0].course_modules_completed.length
-    let totalModules = result[0].course_total_modules
-    courseProgress = (modulesCompleted/totalModules)*100
-        db.query('UPDATE smartle.enrollment SET course_progress = ? WHERE enrollment_id = ?;',[courseProgress, enrollmentId], (err: any, rows: any) =>{
-            if(err){
-                console.log(err);
-            }
-            res.send({message : "Success"})
-            console.log(courseProgress)
-        });
-});
-
-
-});
-
