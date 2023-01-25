@@ -5,7 +5,7 @@ const promisePool = db.promise();
 export const getLearnerCourses = async (req: Request, res: Response) => {
   let { studentId } = req.body;
 
-  let sql = `SELECT * FROM smartle.enrollment INNER JOIN course ON course.course_id = enrollment.course_id WHERE student_id = ${studentId} AND course_progress != 100`;
+  let sql = `SELECT * FROM smartle.enrollment INNER JOIN course ON course.course_id = enrollment.course_id WHERE student_id = ${studentId}`;
   try {
     const [rows]: any = await promisePool.query(sql);
     res.send(rows);
@@ -201,6 +201,47 @@ export const getKeyEvents = async (req: Request, res: Response) => {
       `SELECT * FROM smartle.enrollment INNER JOIN smartle.session ON smartle.enrollment.session_id=smartle.session.session_id WHERE student_id=${student_id};`
     );
     res.send(result);
+  } catch (sqlError) {
+    console.log(sqlError);
+  }
+};
+
+export const updateCourseProgress = (req: Request, res: Response) => {
+  const { enrollmentId } = req.body;
+  let courseProgress: any;
+  db.query(
+    'SELECT * FROM smartle.course_progress WHERE enrollment_id = ? ;',
+    [enrollmentId],
+    (err: any, result: any) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log(result[0].course_modules_completed);
+      let modulesCompleted = result[0].course_modules_completed.length;
+      let totalModules = result[0].course_total_modules;
+      courseProgress = (modulesCompleted / totalModules) * 100;
+      db.query(
+        'UPDATE smartle.enrollment SET course_progress = ? WHERE enrollment_id = ?;',
+        [courseProgress, enrollmentId],
+        (err: any, rows: any) => {
+          if (err) {
+            console.log(err);
+          }
+          res.send({ message: 'Success' });
+          console.log(courseProgress);
+        }
+      );
+    }
+  );
+};
+
+export const updateCertification = async (req: Request, res: Response) => {
+  let { enrollment_id } = req.body;
+  try {
+    const [result]: any = await promisePool.query(
+      `UPDATE smartle.enrollment SET enrollment_status = 'COMPELETED', date_of_completion = '${new Date()}' WHERE enrollment_id = ${enrollment_id}`
+    );
+    res.send({ status: 'updated' });
   } catch (sqlError) {
     console.log(sqlError);
   }

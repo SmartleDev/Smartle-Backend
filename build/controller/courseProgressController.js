@@ -259,8 +259,9 @@ const updateModuleCompeletedArray = (req, res) => __awaiter(void 0, void 0, void
     try {
         const [result] = yield promisePool.query('SELECT course_modules_completed FROM course_progress WHERE enrollment_id = ?', [enrollmentId]);
         val = result === null || result === void 0 ? void 0 : result.map((dataItem) => dataItem === null || dataItem === void 0 ? void 0 : dataItem.course_modules_completed);
-        let duplicate = result === null || result === void 0 ? void 0 : result.filter((data) => data === val[0]);
-        if (duplicate.length !== 0) {
+        let duplicate = val[0].indexOf(moduleIDCompleted);
+        console.log(duplicate, "ducplicate");
+        if (duplicate === -1) {
             val[0].push(moduleIDCompleted);
             try {
                 const [updated] = yield promisePool.query(`UPDATE smartle.course_progress SET course_modules_completed = '[${val[0]}]' WHERE enrollment_id = ${enrollmentId}`);

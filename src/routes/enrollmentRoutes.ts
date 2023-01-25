@@ -14,6 +14,8 @@ import {
   getKeyEvents,
   getCertificatesOfStudent,
   getEnrollmentStatus,
+  updateCourseProgress,
+  updateCertification,
 } from '../controller/enrollmentController';
 
 const router = express.Router();
@@ -32,5 +34,7 @@ router.post('/updateSessionAvaliablity', updateSessionAvaliablity);
 router.get('/getTopicContent/:id', getTopicContent);
 router.post('/getKeyEvents/', getKeyEvents);
 router.post('/enrollmentStatus', getEnrollmentStatus);
+router.post('/updateCourseProgress', updateCourseProgress);
+router.post('/updateCertification', updateCertification);
 
 export default router;

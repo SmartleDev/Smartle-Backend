@@ -344,8 +344,9 @@ export const updateModuleCompeletedArray = async (
       [enrollmentId]
     );
     val = result?.map((dataItem: any) => dataItem?.course_modules_completed);
-    let duplicate = result?.filter((data: any) => data === val[0]);
-    if (duplicate.length !== 0) {
+    let duplicate = val[0].indexOf(moduleIDCompleted)
+    console.log(duplicate, "ducplicate")
+    if (duplicate === -1) {
       val[0].push(moduleIDCompleted);
       try {
         const [updated]: any = await promisePool.query(

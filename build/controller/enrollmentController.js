@@ -12,12 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getKeyEvents = exports.getTopicContent = exports.updateSessionAvaliablity = exports.convertTrialToBuyCourse = exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getCertificatesOfStudent = exports.getEnrollmentStatus = exports.getLearnerCourses = void 0;
+exports.updateCertification = exports.updateCourseProgress = exports.getKeyEvents = exports.getTopicContent = exports.updateSessionAvaliablity = exports.convertTrialToBuyCourse = exports.verifyUserEnrollment = exports.getEnrolledSessionDetails = exports.enrollLearner = exports.getSessionView = exports.getInstructorDetails = exports.getInstructorList = exports.getEnrolledCourseView = exports.getCertificatesOfStudent = exports.getEnrollmentStatus = exports.getLearnerCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 const promisePool = config_1.default.promise();
 const getLearnerCourses = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let { studentId } = req.body;
-    let sql = `SELECT * FROM smartle.enrollment INNER JOIN course ON course.course_id = enrollment.course_id WHERE student_id = ${studentId} AND course_progress != 100`;
+    let sql = `SELECT * FROM smartle.enrollment INNER JOIN course ON course.course_id = enrollment.course_id WHERE student_id = ${studentId}`;
     try {
         const [rows] = yield promisePool.query(sql);
         res.send(rows);
@@ -195,3 +195,35 @@ const getKeyEvents = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getKeyEvents = getKeyEvents;
+const updateCourseProgress = (req, res) => {
+    const { enrollmentId } = req.body;
+    let courseProgress;
+    config_1.default.query('SELECT * FROM smartle.course_progress WHERE enrollment_id = ? ;', [enrollmentId], (err, result) => {
+        if (err) {
+            console.log(err);
+        }
+        console.log(result[0].course_modules_completed);
+        let modulesCompleted = result[0].course_modules_completed.length;
+        let totalModules = result[0].course_total_modules;
+        courseProgress = (modulesCompleted / totalModules) * 100;
+        config_1.default.query('UPDATE smartle.enrollment SET course_progress = ? WHERE enrollment_id = ?;', [courseProgress, enrollmentId], (err, rows) => {
+            if (err) {
+                console.log(err);
+            }
+            res.send({ message: 'Success' });
+            console.log(courseProgress);
+        });
+    });
+};
+exports.updateCourseProgress = updateCourseProgress;
+const updateCertification = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let { enrollment_id } = req.body;
+    try {
+        const [result] = yield promisePool.query(`UPDATE smartle.enrollment SET enrollment_status = 'COMPELETED', date_of_completion = '${new Date()}' WHERE enrollment_id = ${enrollment_id}`);
+        res.send({ status: 'updated' });
+    }
+    catch (sqlError) {
+        console.log(sqlError);
+    }
+});
+exports.updateCertification = updateCertification;
