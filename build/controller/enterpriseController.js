@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getHomeEnterpriseCourses = void 0;
+exports.getEnterpriseCourse = exports.getHomeEnterpriseCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 const promisePool = config_1.default.promise();
 const getHomeEnterpriseCourses = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -25,3 +25,14 @@ const getHomeEnterpriseCourses = (req, res) => __awaiter(void 0, void 0, void 0,
     }
 });
 exports.getHomeEnterpriseCourses = getHomeEnterpriseCourses;
+const getEnterpriseCourse = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { courseName } = req.params;
+    try {
+        const [rows] = yield promisePool.query(`SELECT * from enterprise_courses WHERE enterprise = "True" AND enterprise_courses.slug = '${courseName}'`);
+        res.send(rows);
+    }
+    catch (sqlError) {
+        console.log(sqlError);
+    }
+});
+exports.getEnterpriseCourse = getEnterpriseCourse;
