@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import db from '../config/config';
 import aws from 'aws-sdk';
 import dotenv from 'dotenv';
+import moment from 'moment';
 const promisePool = db.promise();
 dotenv.config();
 
@@ -337,157 +338,167 @@ export const registerIntrest = async (req: Request, res: Response) => {
 };
 
 export const CourseInvoice = async (req: Request, res: Response) => {
-  const { emailTo, courseId } = req.body;
+  const { emailTo, courseId, studentId } = req.body;
 
   let invoiceDetails: any;
 
   let body: any;
 
   let subject: any;
+  let enrollmenntData: any;
 
   try {
     const [result]: any = await promisePool.query(
       `SELECT *
-      FROM payment
-      ORDER BY payment_id DESC
-      LIMIT 1`,
-      []
+      FROM payment WHERE payment.payment_student_id = ?`,
+      [studentId]
     );
+    try {
+      const [enrollment]: any = await promisePool.query(
+        `SELECT * FROM smartle.enrollment INNER JOIN course ON course.course_id = enrollment.course_id WHERE enrollment.student_id = ? AND enrollment.course_id = ?`,
+        [studentId, courseId]
+      );
+      enrollmenntData = enrollment[enrollment.length - 1];
+    } catch (sqlError) {
+      console.log(sqlError);
+    }
 
-    invoiceDetails = result[0];
-    console.log(result);
+    invoiceDetails = result[result.length - 1];
+    //console.log(invoiceDetails);
     subject = `Payment Invoce Smartle.Co`;
-    body = `
-          <head>
-          <meta charset="UTF-8" />
-          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>Document</title>
-          <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
-            integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-            crossorigin="anonymous"
-          />
-          <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
-            integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-          />
-        </head>
-        <body>
-          <div class="card" style="background-color:#DFD1E7;margin-top:40px;border-radius:20px;margin-left:auto;margin-right:auto;width: 70%;box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;">
-            <div class="card-header bg-black"></div>
-            <div class="card-body">
-              <div class="container">
-                <div class="row" style="display: flex; justify-content: center;margin-top:50px">
-                  <div class="col-xl-12">
-                    <img
-                      src="https://smartle-video-content.s3.amazonaws.com/smartle-logo/smartleblacklogo.png"
-                      alt=""
-                      height="50px"
-                      srcset=""
-                    />
+    body = `<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8" />
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <link
+              rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+              integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+              crossorigin="anonymous"
+            />
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+            <link
+              rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+              integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A=="
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+            />
+          </head>
+          <body>
+            <div class="card" style="background-color:#DFD1E7;margin-top:40px;border-radius:20px;margin-left:auto;margin-right:auto;width: 70%;box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;">
+              <div class="card-header bg-black"></div>
+              <div class="card-body">
+                <div style = 'padding:20px 50px 30px 100px;'>
+                  <div class="row" style="display: flex; justify-content: center;margin-top:50px">
+                    <div class="col-xl-12">
+                      <img
+                      style = 'margin-right: 300px;'
+                        src="https://smartle-video-content.s3.amazonaws.com/smartle-logo/smartleblacklogo.png"
+                        alt=""
+                        height="50px"
+                        srcset=""
+                      />
+                    </div>
                   </div>
-                </div>
-      
-                <div class="row">
-                  <div class="col-xl-12">
-                    <ul class="list-unstyled float-end">
-                      <!-- <li style="font-size: 30px; color: #735aac">Smartle.Co</li> -->
-                      <li>123, Elm Street</li>
-                      <li>123-456-789</li>
-                      <li>talk2us@smartle.co</li>
-                    </ul>
+        
+                  <div class="row">
+                    <div class="col-xl-12">
+                      <ul class="list-unstyled float-end">
+                        <!-- <li style="font-size: 30px; color: #735aac">Smartle.Co</li> -->
+                        <li>123, Elm Street</li>
+                        <li>123-456-789</li>
+                        <li>talk2us@smartle.co</li>
+                      </ul>
+                    </div>
                   </div>
-                </div>
-      
-                <div class="row text-center">
-                  <h3
-                    class="text-uppercase text-center mt-3"
-                    style="font-size: 40px; color: #735aac"
-                  >
-                    <i class="fa-solid fa-file-invoice"></i>
-                    Invoice
-                  </h3>
-                  <p>123456789</p>
-                </div>
-      
-                <div class="row mx-3">
-                  <table class="table">
+        
+                  <div class="row text-center">
+                    <h3
+                      style="font-size: 40px; color: #735aac; text-align: center;"
+                    >
+                    <img src="https://smartle-video-content.s3.amazonaws.com/Email+Images/invoice.png" width="60px" alt="" style="color:#735aac">
+                      Invoice
+                    </h3>
+                  </div>
+        
+                  <div style = 'box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;display: flex; justify-content: center;padding-bottom: 50px;overflow-x:auto;'>
+                  <table style = 'box-shadow:rgba(0, 0, 0, 0.35) 0px 5px 15px;font-size:20px;border-radius: 20px;width: 80%;text-align: center;border-spacing: 30px;'>
                     <thead>
-                      <tr>
-                        <th scope="col">Description</th>
-                        <th scope="col">Quantity</th>
-                        <th scope="col">Amount</th>
+                      <tr style = 'border:2px solid grey; padding: 20px; height: 50px;border-spacing: 30px;background-color: #735aac;color: #DFD1E7;'>
+                        <th scope="col" style = 'padding: 15px;'>Description</th>
+                        <th scope="col" style = 'padding: 15px;'>Quantity</th>
+                        <th scope="col" style = 'padding: 15px;'>Amount</th>
+                        <th scope="col" style = 'padding: 15px;'>Mode</th>
+                        <th scope="col" style = 'padding: 15px;'>Curreny</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>Samsung TV</td>
+                      <tr style = 'border: 2px solid #735aac;'>
+                        <td>${enrollmenntData?.course_name}</td>
                         <td>1</td>
-                        <td><i class="fa-solid fa-indian-rupee-sign"></i> 500,00</td>
-                      </tr>
-                      <tr>
-                        <td></td>
-                        <td></td>
+                        <td style = 'padding: 15px;'><i class="fa-solid fa-indian-rupee-sign"></i> ${invoiceDetails?.payment_amount}</td>
+                        <td style = 'padding: 15px;'>${invoiceDetails?.payment_mode.toUpperCase()}</td>
+                        <td style = 'padding: 15px;'>${invoiceDetails?.payment_currency.toUpperCase()}</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
-                <div class="row">
-                  <div class="col-xl-8">
-                    <ul class="list-unstyled float-end me-0">
-                      <!-- <li>
-                        <span class="me-3 float-start">Total Amount:</span
-                        ><i class="fa-solid fa-indian-rupee-sign"></i> 6850,00
-                      </li>
-                      <li>
-                        <span class="me-5">Discount:</span
-                        ><i class="fa-solid fa-indian-rupee-sign"></i> 500,00
-                      </li>
-                      <li>
-                        <span class="float-start" style="margin-right: 35px"
-                          >Shippment: </span
-                        ><i class="fa-solid fa-indian-rupee-sign"></i> 500,00
-                      </li>
-                    </ul>
+                  <div class="row">
+                    <div class="col-xl-8">
+                      <ul class="list-unstyled float-end me-0">
+                        <!-- <li>
+                          <span class="me-3 float-start">Total Amount:</span
+                          ><i class="fa-solid fa-indian-rupee-sign"></i> 6850,00
+                        </li>
+                        <li>
+                          <span class="me-5">Discount:</span
+                          ><i class="fa-solid fa-indian-rupee-sign"></i> 500,00
+                        </li>
+                        <li>
+                          <span class="float-start" style="margin-right: 35px"
+                            >Shippment: </span
+                          ><i class="fa-solid fa-indian-rupee-sign"></i> 500,00
+                        </li>
+                      </ul>
+                    </div>
                   </div>
-                </div>
-                <hr />
-                <div class="row">
-                  <div class="col-xl-8" style="margin-left: 60px">
-                    <p
-                      class="float-end"
-                      style="
-                        font-size: 30px;
-                        color: #735aac;
-                        font-weight: 400;
-                        font-family: Arial, Helvetica, sans-serif;
-                      "
-                    >
-                      Total:
-                      <span
-                        ><i class="fa-solid fa-indian-rupee-sign"></i> 6350,00</span
+                  <hr />
+                  <div class="row">
+                    <div class="col-xl-8" style="margin-left: 60px">
+                      <p
+                        class="float-end"
+                        style="
+                          font-size: 30px;
+                          color: #735aac;
+                          font-weight: 400;
+                          font-family: Arial, Helvetica, sans-serif;
+                        "
                       >
+                        Total:
+                        <span
+                          ><i class="fa-solid fa-indian-rupee-sign"></i> 6350,00</span
+                        >
+                      </p>
+                    </div>
+                  </div> -->
+        
+                  <div class="row mt-2 mb-5">
+                    <p class="fw-bold">
+                      Date: <span class="text-muted">${invoiceDetails?.payment_dateandtime}
                     </p>
+                    <p class="fw-bold mt-3">Signature:</p>
                   </div>
-                </div> -->
-      
-                <div class="row mt-2 mb-5">
-                  <p class="fw-bold">
-                    Date: <span class="text-muted">23 June 20221</span>
-                  </p>
-                  <p class="fw-bold mt-3">Signature:</p>
                 </div>
               </div>
+              <div class="card-footer bg-black"></div>
             </div>
-            <div class="card-footer bg-black"></div>
-          </div>
-        </body>
-  `;
+          </body>
+    </html>`;
 
     emailService(emailTo, body, subject)
       .then((val) => {
