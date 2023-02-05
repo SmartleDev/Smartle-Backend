@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getEnterpriseCourse = exports.getHomeEnterpriseCourses = void 0;
+exports.getGradeInfo = exports.getGrads = exports.getEnterpriseCourse = exports.getHomeEnterpriseCourses = void 0;
 const config_1 = __importDefault(require("../config/config"));
 const promisePool = config_1.default.promise();
 const getHomeEnterpriseCourses = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -36,3 +36,26 @@ const getEnterpriseCourse = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.getEnterpriseCourse = getEnterpriseCourse;
+const getGrads = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { courseName } = req.params;
+    try {
+        const [rows] = yield promisePool.query(`SELECT grade from enterprise_courses WHERE enterprise_courses.slug = '${courseName}'`);
+        let val = rows.map((item) => item.grade);
+        res.send(val);
+    }
+    catch (sqlError) {
+        console.log(sqlError);
+    }
+});
+exports.getGrads = getGrads;
+const getGradeInfo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { courseName, grade } = req.body;
+    try {
+        const [rows] = yield promisePool.query(`SELECT timeline FROM smartle.enterprise_courses WHERE enterprise_courses.slug = ? AND enterprise_courses.grade = ?`, [courseName, grade]);
+        res.send(rows[0].timeline);
+    }
+    catch (sqlError) {
+        console.log(sqlError);
+    }
+});
+exports.getGradeInfo = getGradeInfo;
