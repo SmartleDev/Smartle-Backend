@@ -52,7 +52,7 @@ const getAllCourses = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.getAllCourses = getAllCourses;
 const getAllCoursesOnHome = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let sql = `SELECT * FROM smartle.course_general WHERE course_displayonhome = TRUE;`;
+    let sql = `SELECT * FROM course_general WHERE course_displayonhome = 'TRUE';`;
     try {
         const [result] = yield promisePool.query(sql);
         res.send(result);

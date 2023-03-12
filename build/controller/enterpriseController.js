@@ -51,8 +51,8 @@ exports.getGrads = getGrads;
 const getGradeInfo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { courseName, grade } = req.body;
     try {
-        const [rows] = yield promisePool.query(`SELECT timeline FROM smartle.enterprise_courses WHERE enterprise_courses.slug = ? AND enterprise_courses.grade = ?`, [courseName, grade]);
-        res.send(rows[0].timeline);
+        const [rows] = yield promisePool.query(`SELECT * FROM smartle.enterprise_courses WHERE enterprise_courses.slug = ? AND enterprise_courses.grade REGEXP ?;'`, [courseName, grade]);
+        res.send(rows);
     }
     catch (sqlError) {
         console.log(sqlError);

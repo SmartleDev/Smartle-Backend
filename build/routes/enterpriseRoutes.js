@@ -8,6 +8,6 @@ const enterpriseController_1 = require("../controller/enterpriseController");
 const router = express_1.default.Router();
 router.get('/getHomeEnterpriseCourses', enterpriseController_1.getHomeEnterpriseCourses);
 router.get('/getEnterpriseCourse/:courseName', enterpriseController_1.getEnterpriseCourse);
-router.post('/getGradeInfo', enterpriseController_1.getGradeInfo);
+router.post('/getGradeInfo/', enterpriseController_1.getGradeInfo);
 router.get('/getGrads/:courseName', enterpriseController_1.getGrads);
 exports.default = router;
